@@ -19,7 +19,7 @@ $(document).ready(function() {
   teamModal.find(".colorpickerinput").colorpicker();
   var eventModal = $("#create-event-modal");
 
-  socket = io.connect("http://192.168.1.10:80");
+  socket = io.connect(document.location.href); // "http://192.168.1.10:80"
 
   /*addPlayerBtn.on("click", function() {
     socket.emit("updateobject", {"type" : "player", "username" : "gion"});
