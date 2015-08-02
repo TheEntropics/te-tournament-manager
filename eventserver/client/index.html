@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EventServer</title>
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Styles -->
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body oncontextmenu="return false;">
+
+  <div id="navbarView">
+    <nav class="navbar navbar-default">
+      <div class="container">
+
+        <div class="navbar-header">
+        <a class="navbar-brand" href="#">EventServer</a>
+      </div>
+
+    </div>
+  </nav>
+</div>
+
+<div class="body-container">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 id="logfile">Log file: </h2>
+          <div id="logcontainer">
+            <p id="log"></p>
+          </div>
+          <p><a class="btn btn-default col-xs-12" href="#" role="button" id="clear">Clear</a></p>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<!-- jQuery -->
+<script src="js/jquery-1.11.2.min.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Custom -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/eventserver.client.js"></script>
+</body>
+</html>

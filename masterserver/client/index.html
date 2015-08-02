@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Masterserver</title>
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
+  <!-- Styles -->
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <div id="navbarView">
+    <nav class="navbar navbar-default">
+      <div class="container">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Masterserver</a>
+        </div>
+
+      </div>
+    </nav>
+  </div>
+
+  <div class="body-container">
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Players</h2>
+          <div id="players-list" class="list-group" style="height: 500px; overflow: auto;">
+
+            <!--<a href="#" class="list-group-item">
+              <div class="container-fluid" style="padding-left: 0;">
+                <div class="row">
+                  <img class="media-object col-xs-1" src="images/user.png" alt="">
+                  <div id="button" class="col-xs-9">
+                    <h5 id="text" class="list-group-item-heading">Some text</h5>
+                    <i id="description" class="list-group-item-text">Some more text</i>
+                  </div>
+                  <span class="pull-right"><button id="remove-button" class="btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></span>
+                </div>
+              </div>
+            </a>-->
+
+            <!--<a href="#" class="list-group-item clearfix">
+              <h5 class="list-group-item-heading">gion with a quite very long nickname</h5>
+              <i class="list-group-item-text">No team</i>
+              <span class="pull-right"><button class="btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></span>
+            </a>-->
+            <!--<a href="#" class="list-group-item clearfix">
+              <h5 class="list-group-item-heading">player</h5>
+              <i class="list-group-item-text">No team</i>
+              <span class="pull-right"><button class="btn btn-xs"><span class="glyphicon glyphicon-remove"></span></button></span>
+            </a>-->
+          </div>
+          <p><a id="add-player" class="btn btn-default col-sm-12" role="button">Add player</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Teams</h2>
+          <div id="teams-list" class="list-group" style="height: 500px; overflow: auto;">
+          </div>
+          <p><a id="add-team" class="btn btn-default col-sm-12" role="button">Add team</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Events</h2>
+          <div id="events-list" class="list-group" style="height: 500px; overflow: auto;">
+          </div>
+          <p><a id="add-event" class="btn btn-default col-sm-12" role="button">Add event</a></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Player Modal -->
+  <div class="modal fade" id="create-player-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Creating player</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <h5>Username</h5>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="username" id="username"></input>
+            </div>
+          </form>
+          <h5>Nicknames</h5>
+          <textarea style="resize: vertical;" class="form-control" rows="2" id="nicknames" placeholder="different nicknames this player will use"></textarea>
+          <br/>
+          <h5>Teams</h5>
+          <div id="create-player-modal-teams-list" class="list-group" style="max-height: 250px; overflow: auto;">
+            <button type="button" data-team="0" class="list-group-item">No team <span class="badge">Color</span></button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button id="save-player" type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Modal -->
+  <div class="modal fade" id="create-team-modal" tabindex="-1" role="dialog" aria-labelledby="teamModalLabel">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="teamModalLabel">Creating team</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <h5>Name</h5>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="team name" id="teamname"></input>
+            </div>
+          </form>
+          <h5>Color</h5>
+          <div class="input-group colorpickerinput">
+            <input id="teamcolor" type="text" value="#ffffff" class="form-control"></input>
+            <span class="input-group-addon"><i></i></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button id="save-team" type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Modal -->
+  <div class="modal fade" id="create-event-modal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="eventModalLabel">Creating event</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <h5>Name</h5>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="event name" id="eventname"></input>
+            </div>
+          </form>
+          <h5>Partecipants</h5>
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#teams">Teams</a></li>
+            <li><a data-toggle="tab" href="#players">Players</a></li>
+          </ul>
+          <div class="tab-content">
+            <div id="teams" class="tab-pane fade in active">
+              <div id="create-event-modal-teams-list" class="list-group" style="max-height: 250px; overflow: auto;">
+                <button type="button" data-team="0" class="list-group-item">No teams</button>
+              </div>
+            </div>
+            <div id="players" class="tab-pane fade">
+              <div id="create-event-modal-players-list" class="list-group" style="max-height: 250px; overflow: auto;">
+                <button type="button" data-team="0" class="list-group-item">No players</button>
+              </div>
+            </div>
+          </div>
+          <h5>Event servers</h5>
+          <div id="create-event-modal-servers-list" class="list-group" style="max-height: 150px; overflow: auto;">
+            <button type="button" data-team="0" class="list-group-item">No servers</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button id="save-event" type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="js/jquery-1.11.2.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap-colorpicker.min.js"></script>
+  <!-- Custom -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/masterserver.client.js"></script>
+</body>
+</html>

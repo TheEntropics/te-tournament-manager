@@ -1,0 +1,399 @@
+var express = require("express");
+var crypto = require("crypto");
+var fs = require('fs');
+var sanitizer = require('sanitizer');
+
+var app = express();
+var server = require("http").createServer(app);
+var io = require("socket.io").listen(server);
+
+io.set('origins', '*:80');
+
+// SETUP
+console.log("TheEntropics Mastererver v0.0.1");
+
+var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+console.log();
+console.log("Title: " + config.title);
+console.log();
+
+var Players = {};
+var Teams = {};
+var Events = {};
+
+var Database = {};
+
+function PlayerRecord(id, kills, headshots, knives, kamikaze) {
+	this.id = id;
+	this.kills = kills || 0;
+	this.headshots = headshots || 0;
+	this.knives = knives || 0;
+	this.kamikaze = kamikaze || 0;
+
+	this.updateKills = function(n) {
+
+	};
+
+	this.updateHeadshot = function(n) {
+
+	};
+
+	this.updateKnives = function(n) {
+
+	};
+};
+
+function getNewID() {return new Date().getTime();}
+
+function Player(username, image, team, nicknames) {
+	this.id = "P"+getNewID();
+	this.type = "player";
+	this.username = username;
+	this.nicknames = nicknames;
+	this.image = image;
+	this.team = 0;
+	Players[this.id] = this;
+	var that = this;
+	this.changeTeam = function(team) {
+		// Remove player from old team, if any
+		if (that.team !== undefined && Teams[that.team] !== undefined) {
+			var index = Teams[that.team].players.indexOf(that.id);
+			Teams[that.team].players.splice(index, 1);
+			updateEventServers(that.team);
+		}
+		// Update new team, if any
+		if (Teams[team] !== undefined) {
+			Teams[team].players.push(that.id);
+			that.team = team;
+		} else {
+			that.team = undefined;
+		}
+	}
+	this.changeTeam(team);
+}
+
+function Team(name, color, teamplayers) {
+	this.id = "T"+getNewID();
+	this.type = "team";
+	this.name = name;
+	this.color = color;
+	this.players = [];
+	Teams[this.id] = this;
+
+	for (var i in teamplayers) {
+		if (Players[teamplayers[i]] !== undefined) {
+			Players[teamplayers[i]].changeTeam(this.id);
+		} else {
+			//console.log(teamplayers[i] + " does not exist! [Team]");
+		}
+	}
+
+	var that = this;
+	this.removeAllPlayers = function() {
+		//console.log(that.players);
+		for (var i in that.players) {
+			if (Players[that.players[i]] !== undefined) {
+				Players[that.players[i]].changeTeam(undefined);
+			} else {
+				//console.log(that.players[i] + " does not exist! [removeAllPlayers]");
+				//console.log(Players);
+			}
+		}
+	}
+	this.setPlayers = function(teamplayers) {
+		that.removeAllPlayers();
+		for (var i in teamplayers) {
+			if (Players[i] !== undefined) {
+				Players[i].changeTeam(that.id);
+			}
+		}
+	}
+}
+
+function Event(name, partecipants, eventserverid) {
+	this.id = "E"+getNewID();
+	this.type = "event";
+	this.name = name;
+	this.partecipants = [];
+	this.eventserverid = eventserverid || 0;
+	Events[this.id] = this;
+	var that = this;
+	this.removePartecipant = function(id) {
+		if (id === undefined) return;
+		var index = that.partecipants.indexOf(id);
+		if (index !== -1) {
+			that.partecipants.splice(index, 1);
+		}
+	};
+	this.setEventServer = function(id) {
+		if (EventServers[that.eventserverid] !== undefined) {
+			EventServers[that.eventserverid].unassignFromEvent();
+		}
+		if (id === 0 || EventServers[id] === undefined) {
+			that.eventserverid = 0;
+		} else {
+			EventServers[id].assignEvent(that.id);
+			that.eventserverid = id;
+		}
+	};
+	this.setPartecipants = function(partecipants) {
+		that.partecipants = [];
+		for (var i in partecipants) {
+			if (partecipants[i][0] === "P") {
+				if (Players[partecipants[i]] !== undefined) {
+					that.partecipants.push(partecipants[i]);
+				}
+			} else if (partecipants[i][0] === "T") {
+				if (Teams[partecipants[i]] !== undefined) {
+					that.partecipants.push(partecipants[i]);
+				}
+			}
+		}
+	}
+	this.setEventServer(this.eventserverid);
+	this.setPartecipants(partecipants);
+}
+
+function removePartecipantFromEvent(id) {
+	if (id === undefined) return;
+	for (var i in Events) {
+		if (Events[i] !== undefined) {
+			Events[i].removePartecipant(id);
+			if (Events[i].eventserverid !== undefined && EventServers[Events[i].eventserverid] !== undefined) {
+				EventServers[Events[i].eventserverid].sendUserData();
+			}
+		}
+	}
+}
+
+// SOCKET SETUP
+function sendData(socket) {
+	if (socket !== undefined) {
+		socket.emit("data", {"players" : Players, "teams" : Teams, "events" : Events, "eventservers" : EventServers});
+	} else {
+		io.sockets.emit("data", {"players" : Players, "teams" : Teams, "events" : Events, "eventservers" : EventServers});
+	}
+}
+io.sockets.on("connection", function(socket) {
+	sendData(socket);
+
+	socket.on("updateobject", function(data) {
+		if (data.type === "player") {
+			if (data.username !== undefined) {
+				//data.username = sanitizer.escape(data.username);
+			}
+			// Create Player
+			if (data.id === undefined || Players[data.id] === undefined) {
+				var newPlayer = new Player(data.username, data.image, data.team, data.nicknames);
+				if (newPlayer.team !== undefined && newPlayer.team !== 0) {
+					updateEventServers(newPlayer.id);
+				}
+			} else {
+				// Update Player
+				if (data.team !== undefined && data.team !== Players[data.id].team) {
+					if (data.team === 0) {
+						Players[data.id].changeTeam(undefined);
+					} else {
+						Players[data.id].changeTeam(data.team);
+					}
+				}
+				Players[data.id].username = data.username || Players[data.id].username;
+				Players[data.id].nicknames = data.nicknames || Players[data.id].nicknames;
+				Players[data.id].image = data.image || Players[data.id].image;
+				//console.log(Players[data.id]);
+				updateEventServers(data.id);
+			}
+		} else if (data.type === "team") {
+			if (data.name !== undefined) {
+				//data.name = sanitizer.escape(data.name);
+			}
+			// Create Team
+			if (data.id === undefined || Teams[data.id] === undefined) {
+				var newTeam = new Team(data.name, data.color, data.players);
+				updateEventServers(newTeam.id);
+			} else {
+				// Update Team
+				Teams[data.id].name = data.name || Teams[data.id].name;
+				Teams[data.id].color = data.color || Teams[data.id].color;
+				if (data.players !== undefined) {
+					Teams[data.id].setPlayers(data.players);
+				}
+				updateEventServers(data.id);
+			}
+		} else if (data.type === "event") {
+			if (data.name !== undefined) {
+				//data.name = sanitizer.escape(data.name);
+			}
+			// Create Event
+			if (data.id === undefined || Events[data.id] === undefined) {
+
+				if (data.eventserverid !== undefined) {
+					if (EventServers[data.eventserverid] !== undefined && EventServers[data.eventserverid].assignedeventid !== 0) {
+						var oldeventid = EventServers[data.eventserverid].assignedeventid;
+						Events[oldeventid].setEventServer(0);
+						//console.log("Server has an event alredy, removing it: " + oldeventid);
+					}
+				}
+				var newEvent = new Event(data.name, data.partecipants, data.eventserverid);
+				updateEventServers(newEvent.id);
+			} else {
+				// Update Event
+				Events[data.id].name = data.name || Events[data.id].name;
+				if (data.partecipants !== undefined) {
+					Events[data.id].setPartecipants(data.partecipants);
+				}
+				if (data.eventserverid !== undefined && Events[data.id].eventserverid !== data.eventserverid) {
+					if (EventServers[data.eventserverid] !== undefined && EventServers[data.eventserverid].assignedeventid !== 0) {
+						var oldeventid = EventServers[data.eventserverid].assignedeventid;
+						Events[oldeventid].setEventServer(0);
+						//console.log("Server has an event alredy, removing it: " + oldeventid);
+					}
+					Events[data.id].setEventServer(data.eventserverid);
+					//console.log("Changing eventserverid: "+data.eventserverid);
+				}
+				updateEventServers(data.id);
+			}
+		}
+		sendData();
+	});
+
+	socket.on("deleteobject", function(data) {
+		console.log("deleteobject: "+data.id+" "+data.type);
+		if (data.type === "player") {
+			if (Players[data.id] !== undefined) {
+				Players[data.id].changeTeam(undefined);
+			}
+			Players[data.id] = undefined;
+			removePartecipantFromEvent(data.id);
+		} else if (data.type === "team") {
+			Teams[data.id].removeAllPlayers();
+			Teams[data.id] = undefined;
+			removePartecipantFromEvent(data.id);
+		} else if (data.type === "event") {
+			Events[data.id].setEventServer(0);
+			Events[data.id] = undefined;
+		}
+		sendData();
+		updateEventServers(data.id);
+	});
+});
+
+// WEB SETUP
+app.use("/", express.static(__dirname + '/client'));
+app.get("/", function(req, res) {
+	res.sendFile(__dirname + "/client/index.html");
+});
+
+server.listen(80, "0.0.0.0");
+
+// SERVICE SERVER
+var EventServers = {};
+var EventServerSockets = {};
+function EventServer(id, socket) {
+	this.eventserverid = id;
+	this.assignedeventid = 0;
+	EventServerSockets[this.id] = socket;
+	EventServerSockets[this.id].eventserverid = id;
+	var that = this;
+
+	this.assignEvent = function(id) {
+		if (that.assignedeventid !== 0) that.unassignFromEvent();
+		that.assignedeventid = id;
+		EventServerSockets[that.id].emit("seteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
+		that.sendUserData();
+	};
+	this.unassignFromEvent = function() {
+		if (that.assignedeventid === 0) return;
+		EventServerSockets[that.id].emit("unseteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
+		that.assignedeventid = 0;
+	};
+	this.getConnectedIDs = function() {
+		if (that.assignedeventid === 0) return [];
+		var ids = Events[that.assignedeventid].partecipants.slice();
+		var partecipants = Events[that.assignedeventid].partecipants;
+		for (var i in partecipants) {
+			if (partecipants[i][0] === "T") {
+				var teamPlayers = Teams[partecipants[i]].players;
+				for (var j in teamPlayers) {
+					ids.push(teamPlayers[j]);
+				}
+			}
+		}
+		ids.push(that.assignedeventid);
+		return ids;
+	};
+	this.objectChanged = function(id) {
+		var ids = that.getConnectedIDs();
+		if (ids.indexOf(id) !== -1) {
+			that.sendUserData();
+		}
+	};
+	this.sendUserData = function() {
+		if (that.assignedeventid === 0) return;
+		var partecipants = Events[that.assignedeventid].partecipants;
+		var users = {};
+		for (var i in partecipants) {
+			if (partecipants[i][0] === "P") {
+				users[partecipants[i]] = Players[partecipants[i]].nicknames;
+			} else if (partecipants[i][0] === "T") {
+				var teamPlayers = Teams[partecipants[i]].players;
+				for (var j in teamPlayers) {
+					users[teamPlayers[j]] = Players[teamPlayers[j]].nicknames;
+				}
+			}
+		}
+		EventServerSockets[that.id].emit("updateusers", {"id" : that.assignedeventid, "players" : users});
+	};
+}
+
+function updateEventServers(id) {
+	for (var i in EventServers) {
+		if (EventServers[i] !== undefined) {
+			EventServers[i].objectChanged(id);
+		}
+	}
+}
+
+var serviceApp = express();
+serviceApp.use("/", express.static(__dirname + '/client'));
+serviceApp.get("/", function(req, res) {
+	res.sendFile(__dirname + "/client/index.html");
+});
+
+var serviceServer = require("http").createServer(serviceApp);
+var serviceSocket = require('socket.io').listen(serviceServer);
+serviceSocket.on("connection", function(socket) {
+	//console.log("Client connected to ServiceSocket.");
+	socket.on("registeraseventserver", function(data) {
+		if (EventServers[data.id] === undefined) {
+			console.log("EventServer registered: " + data.id);
+		} else {
+			var cont = 2;
+			while (true) {
+				if (EventServers[data.id+"_"+cont] === undefined) {
+					data.id = data.id+"_"+cont;
+					console.log("EventServer registered: " + data.id);
+					socket.emit("updateserverid", {"id" : data.id});
+					break;
+				}
+				cont++;
+			}
+		}
+		var newEventServer = new EventServer(data.id, socket);
+		EventServers[data.id] = newEventServer;
+		sendData();
+	});
+	socket.on("disconnect", function() {
+		if (EventServers[socket.eventserverid] !== undefined) {
+			if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
+				Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+			}
+		}
+		console.log("EventServer disconnected: " + socket.eventserverid);
+		EventServers[socket.eventserverid] = undefined;
+		EventServerSockets[socket.eventserverid] = undefined;
+		sendData();
+	});
+});
+serviceServer.listen(3000, "0.0.0.0");

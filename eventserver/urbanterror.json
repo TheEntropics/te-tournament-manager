@@ -1,0 +1,36 @@
+{
+	"gamename" : "UrbanTerror 4.2",
+	"event_regex" : "^[ ]*[0-9]+:[0-9]{2} ([a-zA-Z]+)",
+
+	"kill_event_match" : "Kill",
+	"hit_event_match" : "Hit",
+	"headshot_event_match" : "1",
+	"userjoin_event_match" : "ClientUserinfoChanged",
+	"userleave_event_match" : "ClientDisconnect",
+	"roundstart_event_match" : "Warmup",
+	"roundend_event_match" : "ShutdownGame",
+
+	"kill_event_bywhoid_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: ([0-9]+) [0-9]+ [0-9]+: .+ killed .+ by",
+	"kill_event_towhoid_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ ([0-9]+) [0-9]+: .+ killed .+ by",
+	"kill_event_bywho_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ [0-9]+ [0-9]+: (.+) killed .+ by",
+	"kill_event_towho_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ [0-9]+ [0-9]+: .+ killed (.+) by",
+	"kill_event_weapon_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ [0-9]+ [0-9]+: .+ killed .+ by (.+)",
+
+	"kill_event_suicide_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: ([0-9]+) \\1 [0-9]+: .+ killed .+ by",
+	"kill_event_kamikaze_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: ([0-9]+) \\1 [0-9]+: .+ killed .+ by UT_MOD_SPLODED",
+
+	"kamikaze_event_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: ([0-9]+) \\1 [0-9]+: .+ killed .+ by UT_MOD_SPLODED",
+	"kamikaze_event_match" : "",
+	"kamikaze_event_id_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: ([0-9]+) \\1 [0-9]+: .+ killed .+ by UT_MOD_SPLODED",
+
+	"headshot_event_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ [0-9]+ (1) [0-9]+: .+ hit",
+	"hit_event_bywho_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ [0-9]+ [0-9]+ [0-9]+: (.+) hit",
+	"hit_event_bywhoid_regex" : "^[ ]*[0-9]+:[0-9]{2} [a-zA-Z]+: [0-9]+ ([0-9]+) [0-9]+ [0-9]+: .+ hit",
+
+	"userjoin_event_regex" : "^[ ]*[0-9]+:[0-9]{2} (ClientUserinfoChanged)",
+	"userjoin_event_name_regex" : "^[ ]*[0-9]+:[0-9]{2} .+: [0-9]+ n\\\\(.+)\\\\t\\\\[0-9]+\\\\",
+	"userjoin_event_id_regex" : "^[ ]*[0-9]+:[0-9]{2} .+: ([0-9]+) ",
+
+	"userleave_event_regex" : "^[ ]*[0-9]+:[0-9]{2} (ClientDisconnect)",
+	"userleave_event_id_regex" : "^[ ]*[0-9]+:[0-9]{2} .+: ([0-9]+)"
+}
