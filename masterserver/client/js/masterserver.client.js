@@ -18,8 +18,21 @@ $(document).ready(function() {
   var teamModal = $("#create-team-modal");
   teamModal.find(".colorpickerinput").colorpicker();
   var eventModal = $("#create-event-modal");
+  var settingsModal = $("#settings-modal");
 
   socket = io.connect(document.location.href); // "http://192.168.1.10:80"
+
+  settingsModal.find("#save").on("click", function() {
+    var string = JSON.stringify({"players" : players, "teams" : teams, "events" : events}, null, 2);
+    settingsModal.find("#data").val(string);
+  });
+
+  settingsModal.find("#load").on("click", function() {
+    var string = settingsModal.find("#data").val();
+    var data = JSON.parse(string);
+    if (data.players === undefined || data.teams === undefined || data.events === undefined) return;
+    socket.emit("loadrawdata", data);
+  });
 
   /*addPlayerBtn.on("click", function() {
     socket.emit("updateobject", {"type" : "player", "username" : "gion"});

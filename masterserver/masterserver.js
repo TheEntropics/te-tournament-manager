@@ -46,8 +46,8 @@ function PlayerRecord(id, kills, headshots, knives, kamikaze) {
 
 function getNewID() {return new Date().getTime();}
 
-function Player(username, image, team, nicknames) {
-	this.id = "P"+getNewID();
+function Player(username, image, team, nicknames, rawid) {
+	this.id = rawid || "P"+getNewID();
 	this.type = "player";
 	this.username = username;
 	this.nicknames = nicknames;
@@ -73,8 +73,8 @@ function Player(username, image, team, nicknames) {
 	this.changeTeam(team);
 }
 
-function Team(name, color, teamplayers) {
-	this.id = "T"+getNewID();
+function Team(name, color, teamplayers, rawid) {
+	this.id = rawid || "T"+getNewID();
 	this.type = "team";
 	this.name = name;
 	this.color = color;
@@ -111,8 +111,8 @@ function Team(name, color, teamplayers) {
 	}
 }
 
-function Event(name, partecipants, eventserverid) {
-	this.id = "E"+getNewID();
+function Event(name, partecipants, eventserverid, rawid) {
+	this.id = rawid || "E"+getNewID();
 	this.type = "event";
 	this.name = name;
 	this.partecipants = [];
@@ -276,6 +276,28 @@ io.sockets.on("connection", function(socket) {
 		}
 		sendData();
 		updateEventServers(data.id);
+	});
+
+	socket.on("loadrawdata", function(data) {
+		if (data.players !== undefined) {
+			for (var i in data.players) {
+				var newPlayer = new Player(data.players[i].username, data.players[i].image, data.players[i].team, data.players[i].nicknames, data.players[i].id);
+			}
+		}
+		if (data.teams !== undefined) {
+			for (var i in data.teams) {
+				var newTeam = new Team(data.teams[i].name, data.teams[i].color, data.teams[i].players, data.teams[i].id);
+			}
+		}
+		if (data.events !== undefined) {
+			for (var i in data.events) {
+				var newEvent = new Event(data.events[i].name, data.events[i].partecipants, 0, data.events[i].id);
+			}
+		}
+		sendData();
+		for (var i in EventServers) {
+			EventServers[i].sendUserData();
+		}
 	});
 });
 
