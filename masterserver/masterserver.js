@@ -280,16 +280,22 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on("loadrawdata", function(data) {
 		if (data.players !== undefined) {
+			Players = {};
 			for (var i in data.players) {
 				var newPlayer = new Player(data.players[i].username, data.players[i].image, data.players[i].team, data.players[i].nicknames, data.players[i].id);
 			}
 		}
 		if (data.teams !== undefined) {
+			Teams = {};
 			for (var i in data.teams) {
 				var newTeam = new Team(data.teams[i].name, data.teams[i].color, data.teams[i].players, data.teams[i].id);
 			}
 		}
 		if (data.events !== undefined) {
+			for (var i in EventServers) {
+				EventServers[i].unassignFromEvent();
+			}
+			Events = {};
 			for (var i in data.events) {
 				var newEvent = new Event(data.events[i].name, data.events[i].partecipants, 0, data.events[i].id);
 			}
