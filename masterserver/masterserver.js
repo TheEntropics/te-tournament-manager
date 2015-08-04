@@ -123,6 +123,7 @@ function updateDatabase(data) {
 		Database[player.id].updateKillstreak(player.killstreak, data.eventid);
 	}
 	//console.log(Database);
+	notifyListeners();
 }
 
 // INTERNAL OBJECTS
@@ -471,6 +472,23 @@ function updateEventServers(id) {
 	}
 }
 
+// LISTENERS
+var Listeners = {};
+function Listener(socket) {
+	this.id = "LISTENER"+getNewID();
+	this.socket = socket;
+	this.socket.listenerid = this.id;
+	Listeners[this.id] = this;
+}
+function notifyListeners() {
+	for (var i in Listeners) {
+		if (Listeners[i] !== undefined) {
+			Listeners[i].socket.emit("database", Database);
+		}
+	}
+}
+
+// SERVICE PORT
 var serviceApp = express();
 serviceApp.use("/", express.static(__dirname + '/client'));
 serviceApp.get("/", function(req, res) {
@@ -515,7 +533,9 @@ serviceSocket.on("connection", function(socket) {
 			console.log("EventServer round ended: " + socket.eventserverid);
 			if (EventServers[socket.eventserverid].roundstarted) {
 				// Unassign event only if the round was started
-				Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+				if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
+					Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+				}
 			}
 			EventServers[socket.eventserverid].roundstarted = false;
 		});
@@ -530,6 +550,13 @@ serviceSocket.on("connection", function(socket) {
 			EventServers[socket.eventserverid] = undefined;
 			EventServerSockets[socket.eventserverid] = undefined;
 			sendData();
+		});
+	});
+
+	socket.on("registeraslistener", function() {
+		var listener = new Listener(socket);
+		socket.on("disconnect", function() {
+			Listeners[socket.listenerid] = undefined;
 		});
 	});
 });
