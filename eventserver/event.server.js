@@ -94,14 +94,22 @@ function notifyChanges() {
 		for (var i in Players) {
 			if (Players[i].playerid !== 0 && Players[i].datachanged) {
 				var player = Players[i];
+
+				var kills = player.kills - player.last_kills;
+				var kamikaze = player.kamikaze - player.last_kamikaze;
+				var headshots = player.headshots - player.last_headshots;
+				var deaths = player.deaths - player.last_deaths;
+				var killstreak = player.killstreak;
+
 				userdata[player.playerid] = {
-					id: player.playerid,
-					kills: player.kills - player.last_kills,
-					kamikaze: player.kamikaze - player.last_kamikaze,
-					headshots: player.headshots - player.last_headshots,
-					deaths: player.deaths - player.last_deaths,
-					killstreak: player.killstreak
+					"id": player.playerid,
+					"kills": (kills !== 0 ? kills : undefined),
+					"kamikaze": (kamikaze !== 0 ? kamikaze : undefined),
+					"headshots": (headshots !== 0 ? headshots : undefined),
+					"deaths": (deaths !== 0 ? deaths : undefined),
+					"killstreak": (killstreak !== 0 ? killstreak : undefined)
 				};
+				
 				player.last_kills = player.kills;
 				player.last_kamikaze = player.kamikaze;
 				player.last_headshots = player.headshots;
@@ -111,7 +119,7 @@ function notifyChanges() {
 			}
 		}
 		if (cont > 0) {
-			serviceSocket.emit("updateonplayersdata", {"id" : eventid, "players" : userdata});
+			serviceSocket.emit("updateonplayersdata", {"eventid" : eventid, "players" : userdata});
 		}
 	}
 }

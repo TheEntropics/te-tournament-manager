@@ -22,28 +22,110 @@ var Players = {};
 var Teams = {};
 var Events = {};
 
+// DATABASE
 var Database = {};
-
-function PlayerRecord(id, kills, headshots, knives, kamikaze) {
+function PlayerRecord(id) {
 	this.id = id;
-	this.kills = kills || 0;
-	this.headshots = headshots || 0;
-	this.knives = knives || 0;
-	this.kamikaze = kamikaze || 0;
-	
-	this.updateKills = function(n) {
 
+	this.kills = 0;
+	this.deaths = 0;
+	this.headshots = 0;
+	this.knives = 0;
+	this.kamikaze = 0;
+	this.killstreak = 0;
+
+	this.events = {};
+	var that = this;
+	this.updateKills = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		that.kills += n;
+		if (eventid === undefined) return;
+		if (that.events[eventid] === undefined) {
+			that.addEvent(eventid);
+		}
+		that.events[eventid].kills += n;
 	};
 
-	this.updateHeadshot = function(n) {
-
+	this.updateDeaths = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		that.deaths += n;
+		if (eventid === undefined) return;
+		if (that.events[eventid] === undefined) {
+			that.addEvent(eventid);
+		}
+		that.events[eventid].deaths += n;
 	};
 
-	this.updateKnives = function(n) {
+	this.updateHeadshots = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		that.headshots += n;
+		if (eventid === undefined) return;
+		if (that.events[eventid] === undefined) {
+			that.addEvent(eventid);
+		}
+		that.events[eventid].headshots += n;
+	};
 
+	this.updateKnives = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		that.knives += n;
+		if (eventid === undefined) return;
+		if (that.events[eventid] === undefined) {
+			that.addEvent(eventid);
+		}
+		that.events[eventid].knives += n;
+	};
+
+	this.updateKamikaze = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		that.kamikaze += n;
+		if (eventid === undefined) return;
+		if (that.events[eventid] === undefined) {
+			that.addEvent(eventid);
+		}
+		that.events[eventid].kamikaze += n;
+	};
+
+	this.updateKillstreak = function(n, eventid) {
+		if (n === undefined || n === 0) return;
+		if (that.killstreak < n) {
+			that.killstreak = n;
+			if (eventid === undefined) return;
+			if (that.events[eventid] === undefined) {
+				that.addEvent(eventid);
+			}
+			that.events[eventid].killstreak = n;
+		}
+	};
+	this.addEvent = function(eventid) {
+		that.events[eventid] = {
+			"eventid" : eventid,
+			"kills" : 0,
+			"deaths" : 0,
+			"headshots" : 0,
+			"knives" : 0,
+			"kamikaze" : 0,
+			"killstreak" : 0
+		};
 	};
 };
 
+function updateDatabase(data) {
+	for (var i in data.players) {
+		var player = data.players[i];
+		if (Database[player.id] === undefined) {
+			Database[player.id] = new PlayerRecord(player.id);
+		}
+		Database[player.id].updateKills(player.kills, data.eventid);
+		Database[player.id].updateDeaths(player.deaths, data.eventid);
+		Database[player.id].updateKamikaze(player.kamikaze, data.eventid);
+		Database[player.id].updateHeadshots(player.headshots, data.eventid);
+		Database[player.id].updateKillstreak(player.killstreak, data.eventid);
+	}
+	//console.log(Database);
+}
+
+// INTERNAL OBJECTS
 function getNewID() {return new Date().getTime();}
 
 function Player(username, image, team, nicknames, rawid) {
@@ -422,10 +504,15 @@ serviceSocket.on("connection", function(socket) {
 		socket.on("updateonplayersdata", function(data) {
 			console.log("EventServer sent players data: " + socket.eventserverid);
 			console.log(data.players);
+			updateDatabase(data);
 		});
 
 		socket.on("roundend", function() {
 			console.log("EventServer round ended: " + socket.eventserverid);
+			if (EventServers[socket.eventserverid].roundstarted) {
+				// Unassign event only if the round was started
+				Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+			}
 			EventServers[socket.eventserverid].roundstarted = false;
 		});
 
