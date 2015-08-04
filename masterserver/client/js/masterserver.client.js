@@ -3,6 +3,8 @@ var teams = {};
 var events = {};
 var servers = {};
 
+var database = {};
+
 $(document).ready(function() {
 
   var addPlayerBtn = $("#add-player");
@@ -32,6 +34,17 @@ $(document).ready(function() {
     var data = JSON.parse(string);
     if (data.players === undefined || data.teams === undefined || data.events === undefined) return;
     socket.emit("loadrawdata", data);
+  });
+
+  settingsModal.find("#save-database").on("click", function() {
+    /*var string = JSON.stringify({"players" : players, "teams" : teams, "events" : events}, null, 2);
+    settingsModal.find("#data").val(string);*/
+    socket.emit("getdatabase");
+    socket.on("database", function(data) {
+      database = data;
+      var string = JSON.stringify(database, null, 2);
+      settingsModal.find("#data").val(string);
+    });
   });
 
   /*addPlayerBtn.on("click", function() {

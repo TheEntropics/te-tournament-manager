@@ -384,6 +384,10 @@ io.sockets.on("connection", function(socket) {
 		}
 		sendData();
 	});
+
+	socket.on("getdatabase", function() {
+		socket.emit("database", Database);
+	});
 });
 
 // WEB SETUP
@@ -401,19 +405,19 @@ function EventServer(id, socket) {
 	this.eventserverid = id;
 	this.assignedeventid = 0;
 	this.roundstarted = false;
-	EventServerSockets[this.id] = socket;
-	EventServerSockets[this.id].eventserverid = id;
+	EventServerSockets[this.eventserverid] = socket;
+	EventServerSockets[this.eventserverid].eventserverid = id;
 	var that = this;
 
 	this.assignEvent = function(id) {
 		if (that.assignedeventid !== 0) that.unassignFromEvent();
 		that.assignedeventid = id;
-		EventServerSockets[that.id].emit("seteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
+		EventServerSockets[that.eventserverid].emit("seteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
 		that.sendUserData();
 	};
 	this.unassignFromEvent = function() {
 		if (that.assignedeventid === 0) return;
-		EventServerSockets[that.id].emit("unseteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
+		EventServerSockets[that.eventserverid].emit("unseteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
 		that.assignedeventid = 0;
 	};
 	this.getConnectedIDs = function() {
@@ -455,7 +459,7 @@ function EventServer(id, socket) {
 				}
 			}
 		}
-		EventServerSockets[that.id].emit("updateusers", {"id" : that.assignedeventid, "players" : users});
+		EventServerSockets[that.eventserverid].emit("updateusers", {"id" : that.assignedeventid, "players" : users});
 	};
 }
 
