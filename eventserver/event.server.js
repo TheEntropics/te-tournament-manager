@@ -56,47 +56,113 @@ serviceSocket.on("updateusers", function (data) {
 });
 serviceSocket.on("seteventid", function (data) {
 	console.log("Assigned to new event: "+data.name+" ("+data.id+")");
+	eventid = data.id;
+	eventname = data.name;
 });
 serviceSocket.on("unseteventid", function (data) {
 	console.log("Unassigned from event: "+data.name+" ("+data.id+")");
+	eventid = 0;
+	eventname = "";
 });
 serviceSocket.on("disconnect", function() {
 	console.log("Connection to Masterserver lost.");
+	if (eventid !== 0) {
+		console.log("Unassigned from event: "+eventname+" ("+eventid+")");
+		eventid = 0;
+		eventname = "";
+	}
 });
 
+function notifyRoundStart() {
+	//if (eventid !== 0) {
+	serviceSocket.emit("roundstart", {"id" : eventid});
+	//}
+}
+function notifyRoundEnd() {
+	//if (eventid !== 0) {
+	serviceSocket.emit("roundend", {"id" : eventid});
+	//}
+}
+function notifyChanges() {
+	if (roundstarted === false) {
+		roundstarted = true;
+		notifyRoundStart();
+	}
+	if (eventid !== 0) {
+		var userdata = {};
+		var cont = 0;
+		for (var i in Players) {
+			if (Players[i].playerid !== 0 && Players[i].datachanged) {
+				var player = Players[i];
+				userdata[player.playerid] = {
+					id: player.playerid,
+					kills: player.kills - player.last_kills,
+					kamikaze: player.kamikaze - player.last_kamikaze,
+					headshots: player.headshots - player.last_headshots,
+					deaths: player.deaths - player.last_deaths,
+					killstreak: player.killstreak
+				};
+				player.last_kills = player.kills;
+				player.last_kamikaze = player.kamikaze;
+				player.last_headshots = player.headshots;
+				player.last_deaths = player.deaths;
+				player.datachanged = false;
+				cont++;
+			}
+		}
+		if (cont > 0) {
+			serviceSocket.emit("updateonplayersdata", {"id" : eventid, "players" : userdata});
+		}
+	}
+}
+
 // LOCAL DATA
+var eventid = 0;
+var eventname = "";
+var roundstarted = false;
 var Players = {};
 function Player(id, username) {
 	this.id = id;
 	this.username = username;
 	this.id_check = id+username;
+	this.playerid = 0;
+
 	this.kills = 0;
 	this.kamikaze = 0;
 	this.headshots = 0;
-	this.playerid = 0;
-	this.senddatatomasterserver = false;
+	this.deaths = 0;
+	this.killstreak = 0;
+
+	// Last update to server
+	this.last_kills = 0;
+	this.last_kamikaze = 0;
+	this.last_headshots = 0;
+	this.last_deaths = 0;
+	//this.last_killstreak = 0;
+
+	this.datachanged = false;
 	var that = this;
 	this.setPlayerID = function(id) {
 		that.playerid = id;
-		that.senddatatomasterserver = true;
+		that.datachanged = true;
 	}
-	this.updateKills = function(n) {
-
-	};
-	this.updateKamikaze = function(n) {
-
-	};
-	this.updateHeadshots = function(n) {
-
-	};
 	this.addKill = function() {
 		that.kills++;
+		that.killstreak++;
+		that.datachanged = true;
 	};
 	this.addKamikaze = function() {
 		that.kamikaze++;
+		that.datachanged = true;
 	};
 	this.addHeadshot = function() {
 		that.headshots++;
+		that.datachanged = true;
+	};
+	this.addDeath = function() {
+		that.deaths++;
+		that.killstreak = 0;
+		that.datachanged = true;
 	};
 };
 
@@ -117,6 +183,9 @@ function checkPlayers() {
 			console.log("Found player: " + Players[i].username + "(" + Players[i].playerid + ")");
 		}
 	}
+}
+function resetData() {
+	Players = {};
 }
 
 // LOG FILE
@@ -150,7 +219,7 @@ logfile.on("line", function(line) {
 		return; // Irrelevant event.
 	}*/
 	var message = "";
-
+	var changesmade = false;
 	// KILL EVENT
 	var regexstr = gameconfig.event_regex;
 	if (gameconfig.kill_event_regex !== undefined) regexstr = gameconfig.kill_event_regex;
@@ -176,14 +245,24 @@ logfile.on("line", function(line) {
 				// Creating players if needed
 				if (Players[bywhoid] === undefined || Players[bywhoid].id_check !== (bywhoid+bywho)) {
 					Players[bywhoid] = new Player(bywhoid, bywho);
+					if (References[username] !== undefined) {
+						Players[bywhoid].setPlayerID(References[bywho]);
+					}
+					message += bywho + " (" + (Players[bywhoid].playerid !== 0 ? Players[bywhoid].playerid : bywhoid) + ") joined the game. [KillEvent]\n";
 				}
 				if (Players[towhoid] === undefined || Players[towhoid].id_check !== (towhoid+towho)) {
 					Players[towhoid] = new Player(towhoid, towho);
+					if (References[username] !== undefined) {
+						Players[towhoid].setPlayerID(References[towho]);
+					}
+					message += towho + " (" + (Players[towhoid].playerid !== 0 ? Players[towhoid].playerid : towhoid) + ") joined the game. [KillEvent]\n";
 				}
 
 				Players[bywhoid].addKill();
+				Players[towhoid].addDeath();
 
-				message = bywho + " killed " + towho + ". [" + Players[bywhoid].kills + "]";
+				message += bywho + " killed " + towho + ". [" + Players[bywhoid].kills + "]";
+				changesmade = true;
 			}
 		}
 	}
@@ -202,6 +281,7 @@ logfile.on("line", function(line) {
 				if (Players[userid] != undefined) {
 					var username = Players[userid].username;
 					message = username + " (" + userid + ") kamikaze!";
+					changesmade = true;
 				}
 			}
 		}
@@ -227,11 +307,16 @@ logfile.on("line", function(line) {
 							// Creating player if needed
 							if (Players[bywhoid] === undefined || Players[bywhoid].id_check !== (bywhoid+bywho)) {
 								Players[bywhoid] = new Player(bywhoid, bywho);
+								if (References[username] !== undefined) {
+									Players[bywhoid].setPlayerID(References[bywho]);
+								}
+								message += bywho + " (" + (Players[bywhoid].playerid !== 0 ? Players[bywhoid].playerid : bywhoid) + ") joined the game. [HitEvent]\n";
 							}
 
 							Players[bywhoid].addHeadshot();
 
-							message += "\n" + bywho + " made a headshot! [" + Players[bywhoid].headshots + "]";
+							message += (message === "" ? "" : "\n") + bywho + " made a headshot! [" + Players[bywhoid].headshots + "]";
+							changesmade = true;
 						}
 					}
 				}
@@ -265,7 +350,10 @@ logfile.on("line", function(line) {
 							if (oldUser.playerid !== References[username]) {
 								// Delete old player data
 								Players[userid] = new Player(userid, username);
-								message = username + " (" + userid + ") joined the game. [Nickname changed]";
+								if (References[username] !== undefined) {
+									Players[userid].setPlayerID(References[username]);
+								}
+								message = username + " (" + (Players[userid].playerid !== 0 ? Players[userid].playerid : userid) + ") joined the game. [Nickname changed]";
 							} else {
 								// Or assuming player changed nickname
 								Players[userid].username = username;
@@ -315,10 +403,44 @@ logfile.on("line", function(line) {
 		}
 	}
 
+	// ROUND START EVENT
+	regexstr = gameconfig.event_regex;
+	if (gameconfig.roundstart_event_regex !== undefined) regexstr = gameconfig.roundstart_event_regex;
+
+	match = line.match(new RegExp(regexstr, ""));
+	if (match != null) {
+		match = match[1];
+		if (match === gameconfig.roundstart_event_match) {
+			message = "Round started!";
+			roundstarted = true;
+			notifyRoundStart();
+		}
+	}
+
+	// ROUND END EVENT
+	regexstr = gameconfig.event_regex;
+	if (gameconfig.roundend_event_regex !== undefined) regexstr = gameconfig.roundend_event_regex;
+
+	match = line.match(new RegExp(regexstr, ""));
+	if (match != null) {
+		match = match[1];
+		if (match === gameconfig.roundend_event_match) {
+			message = "Round ended!";
+			roundstarted = false;
+			resetData();
+			notifyRoundEnd();
+		}
+	}
+
 	// END OF EVENTS
 	if (message === undefined || message === "") return;
 
 	// SEND DATA
 	webIO.sockets.emit("line", sanitizer.escape(message));
 	console.log(message);
+
+	if (changesmade === true) {
+		notifyChanges();
+		changesmade = false;
+	}
 });

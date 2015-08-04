@@ -30,7 +30,7 @@ function PlayerRecord(id, kills, headshots, knives, kamikaze) {
 	this.headshots = headshots || 0;
 	this.knives = knives || 0;
 	this.kamikaze = kamikaze || 0;
-
+	
 	this.updateKills = function(n) {
 
 	};
@@ -85,7 +85,7 @@ function Team(name, color, teamplayers, rawid) {
 		if (Players[teamplayers[i]] !== undefined) {
 			Players[teamplayers[i]].changeTeam(this.id);
 		} else {
-			//console.log(teamplayers[i] + " does not exist! [Team]");
+			console.log(teamplayers[i] + " does not exist! [Team]");
 		}
 	}
 
@@ -279,31 +279,28 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on("loadrawdata", function(data) {
+		for (var i in EventServers) {
+			EventServers[i].unassignFromEvent();
+		}
+		Players = {};
+		Teams = {};
+		Events = {};
 		if (data.players !== undefined) {
-			Players = {};
 			for (var i in data.players) {
 				var newPlayer = new Player(data.players[i].username, data.players[i].image, data.players[i].team, data.players[i].nicknames, data.players[i].id);
 			}
 		}
 		if (data.teams !== undefined) {
-			Teams = {};
 			for (var i in data.teams) {
 				var newTeam = new Team(data.teams[i].name, data.teams[i].color, data.teams[i].players, data.teams[i].id);
 			}
 		}
 		if (data.events !== undefined) {
-			for (var i in EventServers) {
-				EventServers[i].unassignFromEvent();
-			}
-			Events = {};
 			for (var i in data.events) {
 				var newEvent = new Event(data.events[i].name, data.events[i].partecipants, 0, data.events[i].id);
 			}
 		}
 		sendData();
-		for (var i in EventServers) {
-			EventServers[i].sendUserData();
-		}
 	});
 });
 
@@ -321,6 +318,7 @@ var EventServerSockets = {};
 function EventServer(id, socket) {
 	this.eventserverid = id;
 	this.assignedeventid = 0;
+	this.roundstarted = false;
 	EventServerSockets[this.id] = socket;
 	EventServerSockets[this.id].eventserverid = id;
 	var that = this;
@@ -342,9 +340,13 @@ function EventServer(id, socket) {
 		var partecipants = Events[that.assignedeventid].partecipants;
 		for (var i in partecipants) {
 			if (partecipants[i][0] === "T") {
-				var teamPlayers = Teams[partecipants[i]].players;
-				for (var j in teamPlayers) {
-					ids.push(teamPlayers[j]);
+				if (Teams[partecipants[i]] !== undefined) {
+					var teamPlayers = Teams[partecipants[i]].players;
+					for (var j in teamPlayers) {
+						ids.push(teamPlayers[j]);
+					}
+				} else {
+					console.log(partecipants[i] + " does not exist! [getConnectedIDs]");
 				}
 			}
 		}
@@ -411,17 +413,33 @@ serviceSocket.on("connection", function(socket) {
 		var newEventServer = new EventServer(data.id, socket);
 		EventServers[data.id] = newEventServer;
 		sendData();
-	});
-	socket.on("disconnect", function() {
-		if (EventServers[socket.eventserverid] !== undefined) {
-			if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
-				Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+
+		socket.on("roundstart", function() {
+			console.log("EventServer round started: " + socket.eventserverid);
+			EventServers[socket.eventserverid].roundstarted = true;
+		});
+
+		socket.on("updateonplayersdata", function(data) {
+			console.log("EventServer sent players data: " + socket.eventserverid);
+			console.log(data.players);
+		});
+
+		socket.on("roundend", function() {
+			console.log("EventServer round ended: " + socket.eventserverid);
+			EventServers[socket.eventserverid].roundstarted = false;
+		});
+
+		socket.on("disconnect", function() {
+			if (EventServers[socket.eventserverid] !== undefined) {
+				if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
+					Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+				}
 			}
-		}
-		console.log("EventServer disconnected: " + socket.eventserverid);
-		EventServers[socket.eventserverid] = undefined;
-		EventServerSockets[socket.eventserverid] = undefined;
-		sendData();
+			console.log("EventServer disconnected: " + socket.eventserverid);
+			EventServers[socket.eventserverid] = undefined;
+			EventServerSockets[socket.eventserverid] = undefined;
+			sendData();
+		});
 	});
 });
 serviceServer.listen(3000, "0.0.0.0");
