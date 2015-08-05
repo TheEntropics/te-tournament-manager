@@ -109,7 +109,7 @@ function notifyChanges() {
 					"deaths": (deaths !== 0 ? deaths : undefined),
 					"killstreak": (killstreak !== 0 ? killstreak : undefined)
 				};
-				
+
 				player.last_kills = player.kills;
 				player.last_kamikaze = player.kamikaze;
 				player.last_headshots = player.headshots;
@@ -289,6 +289,7 @@ logfile.on("line", function(line) {
 				if (Players[userid] != undefined) {
 					var username = Players[userid].username;
 					message = username + " (" + userid + ") kamikaze!";
+					Players[userid].addDeath();
 					changesmade = true;
 				}
 			}
