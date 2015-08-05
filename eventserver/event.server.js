@@ -125,6 +125,7 @@ function notifyChanges() {
 }
 
 // LOCAL DATA
+function getTimestamp() {return new Date().getTime();}
 var eventid = 0;
 var eventname = "";
 var roundstarted = false;
@@ -140,6 +141,9 @@ function Player(id, username) {
 	this.headshots = 0;
 	this.deaths = 0;
 	this.killstreak = 0;
+
+	this.lastkill_timestamp = 0;
+	this.lastkamikaze_timestamp = 0;
 
 	// Last update to server
 	this.last_kills = 0;
@@ -157,6 +161,7 @@ function Player(id, username) {
 	this.addKill = function() {
 		that.kills++;
 		that.killstreak++;
+		that.lastkill_timestamp = getTimestamp();
 		that.datachanged = true;
 	};
 	this.addKamikaze = function() {
@@ -266,10 +271,21 @@ logfile.on("line", function(line) {
 					message += towho + " (" + (Players[towhoid].playerid !== 0 ? Players[towhoid].playerid : towhoid) + ") joined the game. [KillEvent]\n";
 				}
 
-				Players[bywhoid].addKill();
-				Players[towhoid].addDeath();
+				if (bywhoid === towhoid) {
+					message += bywho + " killed himself.";
+					Players[towhoid].addDeath();
+				} else {
+					Players[bywhoid].addKill();
+					Players[towhoid].addDeath();
+					message += bywho + " killed " + towho + ". [" + Players[bywhoid].kills + "]";
 
-				message += bywho + " killed " + towho + ". [" + Players[bywhoid].kills + "]";
+					// Kamikaze Event Detection
+					if (Math.abs(Players[bywhoid].lastkill_timestamp - Players[bywhoid].lastkamikaze_timestamp) < 1000) {
+						message += "\n" + bywho + " (" + bywhoid + ") kamikaze! [KillEvent]";
+						Players[bywhoid].addKamikaze();
+						Players[bywhoid].lastkamikaze_timestamp = 0;
+					}
+				}
 				changesmade = true;
 			}
 		}
@@ -288,9 +304,14 @@ logfile.on("line", function(line) {
 
 				if (Players[userid] != undefined) {
 					var username = Players[userid].username;
-					message = username + " (" + userid + ") kamikaze!";
-					Players[userid].addDeath();
-					changesmade = true;
+					var timestamp = getTimestamp();
+					if (Math.abs(timestamp - Players[userid].lastkill_timestamp) < 1000) {
+						message += "\n" + username + " (" + userid + ") kamikaze!";
+						Players[userid].addKamikaze();
+						changesmade = true;
+					} else {
+						Players[userid].lastkamikaze_timestamp = timestamp;
+					}
 				}
 			}
 		}
