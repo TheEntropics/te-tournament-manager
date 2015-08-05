@@ -11,10 +11,10 @@
 	"roundend_event_match" : "ShutdownGame",
 
 	"kill_event_regex" : "^[ ]*[\\d]+:[\\d]{2} (K);[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
-	"kill_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
-	"kill_event_towhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
-	"kill_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;([a-zA-Z\\d]*);[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
-	"kill_event_towho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
+	"kill_event_towhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_towho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;([a-zA-Z\\d]*);[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
 	"kill_event_weapon_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;([^;]+);",
 
 	"kill_event_suicide_regex" : "^[ ]*[\\d]+:[\\d]{2} K;[a-zA-Z0-9]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-1;",
