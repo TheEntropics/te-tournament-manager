@@ -1,9 +1,11 @@
 {
-	"masterserver" : "192.168.1.7",
+	"masterserver" : "192.168.1.10",
 	"masterserverport" : "3000",
 	"eventservername" : "EventServer",
 	"eventid" : "0",
 	"logfile_csgo" : "/cygdrive/g/csgo_server/csgo_dedicated_server/csgo/console.log",
-	"logfile" : "/Users/francesco/Desktop/games.log",
-	"gameconfig" : "urbanterror.json"
+	"logfile_urt" : "/cygdrive/g/UrbanTerror42/q3ut4/games.log",
+	"logfile" : "/cygdrive/e/Program Files (x86)/Activision/Call of Duty 4 - Modern Warfare/main/games_mp.log",
+	"gameconfig_urt" : "urbanterror.json",
+	"gameconfig" : "cod4.json"
 }
