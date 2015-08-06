@@ -123,9 +123,7 @@ function updateDatabase(data) {
 		Database[player.id].updateKillstreak(player.killstreak, data.eventid);
 	}
 	//console.log(Database);
-	notifyListeners();
 }
-
 // INTERNAL OBJECTS
 function getNewID() {return new Date().getTime();}
 
@@ -386,15 +384,23 @@ io.sockets.on("connection", function(socket) {
 		sendData();
 	});
 
-	socket.on("getdatabase", function() {
+	socket.on("getdatabase", function(room) {
 		socket.emit("database", Database);
 	});
 });
 
+
+var pub = __dirname + '/public';
+var path = require('path');
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')));
 // WEB SETUP
-app.use("/", express.static(__dirname + '/client'));
 app.get("/", function(req, res) {
-	res.sendFile(__dirname + "/client/index.html");
+	res.render("index");
+});
+app.get("/:id", function(req, res) {
+	res.render('rankings', {id: req.params.id});
 });
 
 server.listen(80, "0.0.0.0");
@@ -472,22 +478,6 @@ function updateEventServers(id) {
 	}
 }
 
-// LISTENERS
-var Listeners = {};
-function Listener(socket) {
-	this.id = "LISTENER"+getNewID();
-	this.socket = socket;
-	this.socket.listenerid = this.id;
-	Listeners[this.id] = this;
-}
-function notifyListeners() {
-	for (var i in Listeners) {
-		if (Listeners[i] !== undefined) {
-			Listeners[i].socket.emit("database", Database);
-		}
-	}
-}
-
 // SERVICE PORT
 var serviceApp = express();
 serviceApp.use("/", express.static(__dirname + '/client'));
@@ -499,6 +489,20 @@ var serviceServer = require("http").createServer(serviceApp);
 var serviceSocket = require('socket.io').listen(serviceServer);
 serviceSocket.on("connection", function(socket) {
 	//console.log("Client connected to ServiceSocket.");
+	socket.on('create', function(room) {
+		console.log("room: "+room);
+		socket.join(room);
+		var rankings = [];
+		for(var i in Database){
+			for(var x in Database[i].events) {
+				if(x == room) {
+					Database[i].nickname = Players[Database[i].id].username;
+					rankings.push(Database[i]);
+				}
+			}
+		}
+		socket.emit("getRanking", rankings);
+	});
 	socket.on("registeraseventserver", function(data) {
 		if (EventServers[data.id] === undefined) {
 			console.log("EventServer registered: " + data.id);
@@ -526,6 +530,7 @@ serviceSocket.on("connection", function(socket) {
 		socket.on("updateonplayersdata", function(data) {
 			console.log("EventServer sent players data: " + socket.eventserverid);
 			console.log(data.players);
+			socket.in(data.eventid).emit("updateRanking", {players: data.players});
 			updateDatabase(data);
 		});
 
@@ -550,13 +555,6 @@ serviceSocket.on("connection", function(socket) {
 			EventServers[socket.eventserverid] = undefined;
 			EventServerSockets[socket.eventserverid] = undefined;
 			sendData();
-		});
-	});
-
-	socket.on("registeraslistener", function() {
-		var listener = new Listener(socket);
-		socket.on("disconnect", function() {
-			Listeners[socket.listenerid] = undefined;
 		});
 	});
 });

@@ -1,9 +1,9 @@
 {
-	"masterserver" : "192.168.1.10",
+	"masterserver" : "192.168.1.7",
 	"masterserverport" : "3000",
 	"eventservername" : "EventServer",
 	"eventid" : "0",
 	"logfile_csgo" : "/cygdrive/g/csgo_server/csgo_dedicated_server/csgo/console.log",
-	"logfile" : "/cygdrive/g/UrbanTerror42/q3ut4/games.log",
+	"logfile" : "/Users/francesco/Desktop/games.log",
 	"gameconfig" : "urbanterror.json"
 }
