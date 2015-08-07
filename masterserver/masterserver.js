@@ -6,6 +6,7 @@ var sanitizer = require('sanitizer');
 var app = express();
 var server = require("http").createServer(app);
 var io = require("socket.io").listen(server);
+var dl  = require('delivery');
 
 io.set('origins', '*:80');
 
@@ -283,6 +284,17 @@ io.sockets.on("connection", function(socket) {
 				}
 				Players[data.id].username = data.username || Players[data.id].username;
 				Players[data.id].nicknames = data.nicknames || Players[data.id].nicknames;
+
+				if (data.image !== undefined && Players[data.id].image !== undefined) {
+					var filetodelete = Players[data.id].image+"";
+					fs.unlink("client/img/uploads/"+filetodelete, function(err){
+			      if (err) {
+			        console.log('File could not be deleted: '+filetodelete);
+			      } else {
+			        console.log('File deleted: '+filetodelete);
+			      };
+			    });
+				}
 				Players[data.id].image = data.image || Players[data.id].image;
 				//console.log(Players[data.id]);
 				updateEventServers(data.id);
@@ -345,6 +357,16 @@ io.sockets.on("connection", function(socket) {
 		console.log("deleteobject: "+data.id+" "+data.type);
 		if (data.type === "player") {
 			if (Players[data.id] !== undefined) {
+				if (Players[data.id].image !== undefined) {
+					var filetodelete = Players[data.id].image+"";
+					fs.unlink("client/img/uploads/"+filetodelete, function(err){
+			      if (err) {
+			        console.log('File could not be deleted: '+filetodelete);
+			      } else {
+			        console.log('File deleted: '+filetodelete);
+			      };
+			    });
+				}
 				Players[data.id].changeTeam(undefined);
 			}
 			Players[data.id] = undefined;
@@ -389,12 +411,37 @@ io.sockets.on("connection", function(socket) {
 	socket.on("getdatabase", function() {
 		socket.emit("database", Database);
 	});
+
+	var delivery = dl.listen(socket);
+  delivery.on('receive.success',function(file) {
+    fs.writeFile("client/img/uploads/"+file.uid, file.buffer, function(err){
+      if (err) {
+        console.log('File could not be saved: '+file.uid);
+      } else {
+        console.log('File saved: '+file.uid);
+      };
+    });
+  });
+
 });
 
 // WEB SETUP
 app.use("/", express.static(__dirname + '/client'));
 app.get("/", function(req, res) {
 	res.sendFile(__dirname + "/client/index.html");
+});
+app.get('/img/uploads/*', function(req, res){
+	path = req.params[0];
+	if (path) {
+		res.sendFile(path, {root: './client/img/uploads/'},
+			function (err) {
+	    if (err) {
+				res.sendFile(__dirname + "/client/img/default_player.png");
+	    }
+		});
+	} else {
+		res.sendFile(__dirname + "/client/img/default_player.png");
+	}
 });
 
 server.listen(80, "0.0.0.0");
@@ -497,6 +544,8 @@ serviceApp.get("/", function(req, res) {
 
 var serviceServer = require("http").createServer(serviceApp);
 var serviceSocket = require('socket.io').listen(serviceServer);
+serviceSocket.set('origins', '*:3000');
+
 serviceSocket.on("connection", function(socket) {
 	//console.log("Client connected to ServiceSocket.");
 	socket.on("registeraseventserver", function(data) {
@@ -559,5 +608,18 @@ serviceSocket.on("connection", function(socket) {
 			Listeners[socket.listenerid] = undefined;
 		});
 	});
+
 });
 serviceServer.listen(3000, "0.0.0.0");
+
+// IMAGE UPLOAD SERVICE
+var uploadApp = express();
+
+var uploadServer = require("http").createServer(uploadApp);
+var uploadSocket  = require('socket.io').listen(uploadServer);
+uploadSocket.set('origins', '*:3001');
+
+uploadSocket.sockets.on('connection', function(socket){
+
+});
+uploadServer.listen(3001, "0.0.0.0");
