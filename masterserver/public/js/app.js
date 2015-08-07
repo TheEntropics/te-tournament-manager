@@ -5,10 +5,10 @@ angular.module("entropicsFest", [])
 	})
 
 	.factory('socket', function ($rootScope) {
-	  var socket = io.connect("0.0.0.0:3000");
+	  var socket = io.connect("http://localhost:3000/");
 	  return {
 	    on: function (eventName, callback) {
-	      socket.on(eventName, function () {  
+	      socket.on(eventName, function () {
 	        var args = arguments;
 	        $rootScope.$apply(function () {
 	          callback.apply(socket, args);
@@ -144,7 +144,7 @@ angular.module("entropicsFest", [])
 			}
 			function rearrange(){
 				$('.item').each(function(idx, el){
-					var $el = $(el);				
+					var $el = $(el);
 					var newTop = idx * $config.OFFSET_Y;
 					if (newTop != parseInt($el.css('top'))) {
 						$el.css({
@@ -153,9 +153,9 @@ angular.module("entropicsFest", [])
 						.one('webkitTransitionEnd', function (evt){
 							$(evt.target).removeClass('moving');
 						})
-						.addClass('moving');	
+						.addClass('moving');
 					}
-					
+
 				});
 			}
 

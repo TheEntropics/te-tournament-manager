@@ -1,0 +1,2 @@
+cd eventserver
+start_server.bat

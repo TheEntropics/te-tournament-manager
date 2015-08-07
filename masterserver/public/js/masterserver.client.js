@@ -283,6 +283,8 @@ $(document).ready(function() {
 
         if (players[id].image !== undefined) {
           playerModal.find("#player-image").attr("src", "img/uploads/"+players[id].image);
+        } else {
+          playerModal.find("#player-image").attr("src", "img/uploads/default");
         }
 
         var nicknames = "";

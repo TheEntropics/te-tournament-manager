@@ -1,0 +1,2 @@
+cd masterserver
+start_server.bat
