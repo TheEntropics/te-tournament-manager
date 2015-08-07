@@ -293,7 +293,7 @@ io.sockets.on("connection", function(socket) {
 
 				if (data.image !== undefined && Players[data.id].image !== undefined) {
 					var filetodelete = Players[data.id].image+"";
-					fs.unlink("client/img/uploads/"+filetodelete, function(err){
+					fs.unlink("public/img/uploads/"+filetodelete, function(err){
 			      if (err) {
 			        console.log('File could not be deleted: '+filetodelete);
 			      } else {
@@ -366,7 +366,7 @@ io.sockets.on("connection", function(socket) {
 			if (Players[data.id] !== undefined) {
 				if (Players[data.id].image !== undefined) {
 					var filetodelete = Players[data.id].image+"";
-					fs.unlink("client/img/uploads/"+filetodelete, function(err){
+					fs.unlink("public/img/uploads/"+filetodelete, function(err){
 			      if (err) {
 			        console.log('File could not be deleted: '+filetodelete);
 			      } else {
@@ -421,7 +421,7 @@ io.sockets.on("connection", function(socket) {
 
 	var delivery = dl.listen(socket);
   delivery.on('receive.success',function(file) {
-    fs.writeFile("client/img/uploads/"+file.uid, file.buffer, function(err){
+    fs.writeFile("public/img/uploads/"+file.uid, file.buffer, function(err){
       if (err) {
         console.log('File could not be saved: '+file.uid);
       } else {
@@ -449,14 +449,14 @@ app.get("/:id", function(req, res) {
 app.get('/img/uploads/*', function(req, res){
 	path = req.params[0];
 	if (path) {
-		res.sendFile(path, {root: './client/img/uploads/'},
+		res.sendFile(path, {root: './public/img/uploads/'},
 			function (err) {
 	    if (err) {
-				res.sendFile(__dirname + "/client/img/default_player.png");
+				res.sendFile(__dirname + "/public/img/default_player.png");
 	    }
 		});
 	} else {
-		res.sendFile(__dirname + "/client/img/default_player.png");
+		res.sendFile(__dirname + "/public/img/default_player.png");
 	}
 });
 
@@ -552,7 +552,6 @@ serviceApp.get("/", function(req, res) {
 
 var serviceServer = require("http").createServer(serviceApp);
 var serviceSocket = require('socket.io').listen(serviceServer);
-serviceSocket.set('origins', '*:3000');
 
 serviceSocket.on("connection", function(socket) {
 	//console.log("Client connected to ServiceSocket.");
@@ -625,13 +624,6 @@ serviceSocket.on("connection", function(socket) {
 		});
 	});
 
-	socket.on("registeraslistener", function() {
-		var listener = new Listener(socket);
-		socket.on("disconnect", function() {
-			Listeners[socket.listenerid] = undefined;
-		});
-	});
-
 });
 serviceServer.listen(3000, "0.0.0.0");
 
@@ -640,7 +632,7 @@ var uploadApp = express();
 
 var uploadServer = require("http").createServer(uploadApp);
 var uploadSocket  = require('socket.io').listen(uploadServer);
-uploadSocket.set('origins', '*:3001');
+//uploadSocket.set('origins', '*:3001');
 
 uploadSocket.sockets.on('connection', function(socket){
 

@@ -13,8 +13,8 @@
   },
   "homepage": "serben.tk",
   "dependencies": {
+    "delivery": "0.0.3",
     "ejs": "^2.3.3",
-	"delivery": "0.0.3",
     "express": "^4.12.3",
     "path": "^0.11.14",
     "redis": "^0.12.1",
