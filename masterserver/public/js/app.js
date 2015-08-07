@@ -58,6 +58,7 @@ angular.module("entropicsFest", [])
 					$scope.users.push({
 						id: data.id,
 						nickname: data.nickname,
+						image: data.image,
 						kills: 0,
 						headshots: 0,
 						knives: 0,

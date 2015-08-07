@@ -528,9 +528,9 @@ function EventServer(id, socket) {
 			if(Database[x]) {
 				console.log("mando il socket");
 				Database[x].addEvent(that.assignedeventid);
-				EventServerSockets[that.eventserverid].in(that.assignedeventid).emit("addUser", {id: x, nickname: users[x][0]});
+				EventServerSockets[that.eventserverid].in(that.assignedeventid).emit("addUser", {id: x, nickname: users[x][0], image: Players[x].image});
 			}
-			
+
 		}
 	};
 }

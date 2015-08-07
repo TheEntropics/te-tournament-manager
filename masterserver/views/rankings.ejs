@@ -12,20 +12,46 @@
 		<script src="js/app.js"></script>
 		<style>
 			body {
-		    	/*background-color: #3A4E8E;*/
-		    	background-color: #2D4052;
+				background-color: #fff;
+				background-image: url("img/te_pattern.png");
+				background-size: 80px 80px;
 		    }
 		    h1 {
+					padding: 10px;
 		    	margin-top: 50px;
-		    	color: #f4f4f4;
+		    	color: #eee;
 		    }
 			.header {
 				min-height: 45px;
-				font-size: 44px; 
-				box-shadow: 0 0 80px rgba(0, 0, 0, .9);
-				-webkit-box-shadow: 0 0 80px rgba(0, 0, 0, .9);
-				-moz-box-shadow: 0 0 80px rgba(0, 0, 0, .9);
+				font-size: 44px;
+				box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				-webkit-box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				-moz-box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				background-color: #2c3e50;
 			}
+			.stripes-left {
+				position: absolute;
+				height: 40%;
+				width: auto;
+				left: 0px;
+				bottom: 0px;
+				z-index: -1;
+			}
+
+			.stripes-right {
+				position: absolute;
+				height: 40%;
+				width: auto;
+				right: 0px;
+				top: 0px;
+				z-index: -1;
+
+				-moz-transform: scaleX(-1) scaleY(-1);
+        -o-transform: scaleX(-1) scaleY(-1);
+        -webkit-transform: scaleX(-1) scaleY(-1);
+        transform: scaleX(-1) scaleY(-1);
+			}
+
       		table {
       			width:90%;
       			margin: 0 auto;
@@ -37,21 +63,28 @@
       		th {
       			font-size: 20px;
       		}
+					tr {
+						color: #ddd;
+					}
       		.table {
-      			background-color: rgba(99, 255, 72, 0.56); /*#f4f4f4;*/
+      			background-color: #2c3e50; /*#f4f4f4;*/
       			margin-top: 20px;
       			margin-bottom: 100px;
-      			box-shadow: 0 0 100px rgba(0, 0, 0, .8);
-				-webkit-box-shadow: 0 0 100px rgba(0, 0, 0, .8);
-				-moz-box-shadow: 0 0 100px rgba(0, 0, 0, .8);
+						box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				-webkit-box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				-moz-box-shadow: 0 0 25px rgba(0, 0, 0, .8);
+				padding-bottom: 15px;
       		}
       		.x {
-      			margin-top: 7px; 
+      			margin-top: 7px;
       			width: 50px;
       			margin-left: 5px;
       		}
+					.xc {
+      			width: 50px;
+      		}
       		.x2 {
-      			margin-top: 7px; 
+      			margin-top: 7px;
       			margin-right: 5px;
       			width: 50px;
       		}
@@ -70,10 +103,14 @@
 
 			.item {
 				height: 50px;
-				color: #555;
+				color: #eee;
 				-webkit-transition: top 1s ease-out, background-color 1s;
 				-moz-transition: top 1s ease-out, background-color 1s;
 				padding: 15px;
+
+				border-collapse: collapse;
+				border-top: 1px solid #eee;
+				border-bottom: 1px solid #eee;
 			}
 
 			.moving {
@@ -97,7 +134,7 @@
 			}
 			.pulse {
 				/*background-color: rgb(26, 111, 239);*/
-				color: #2D4052;/*rgb(26, 111, 239);*/
+				color: #fff;/*rgb(26, 111, 239);*/
 				font-weight: 700;
 				-webkit-animation-name: 'pulse_animation';
 				-webkit-animation-duration: 1000ms;
@@ -112,6 +149,7 @@
 			<div class="container">
 				<div class="header">
 					<h1 class="text-center">
+						<img src="img/te_inverted.png" class="xc">
 						EntropicsFest
 					</h1>
 				</div>
@@ -125,7 +163,7 @@
 				<a href ng-click="start()">start</a>
 				<a href ng-click="getUsers()">users</a>
 			</div>
-			<table>
+			<table style="width: 100%;">
 				<tr>
 					<td style="width: 80px">
 						<div class="table">
@@ -151,7 +189,7 @@
 							    </thead>
 							    <tbody>
 							    	<tr ng-repeat="user in users | orderBy:'-points'" class="item" jd-script>
-							    		<td><img src="img/TheEntropics.png" width="40px"> {{ user.nickname }}</td>
+							    		<td><img ng-src="img/uploads/{{ user.image }}" width="40px"> {{ user.nickname }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.headshots }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.kamikaze }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.knives }}</td>
@@ -166,5 +204,9 @@
 				</tr>
 			</table>
 		</div>
+
+		<img src="img/stripes.png" class="stripes-left">
+		<img src="img/stripes.png" class="stripes-right">
+
 	</body>
-</html>		            
+</html>
