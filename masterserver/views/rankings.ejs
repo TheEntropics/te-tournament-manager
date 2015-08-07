@@ -37,7 +37,7 @@
       		th {
       			font-size: 20px;
       		}
-      		#table {
+      		.table {
       			background-color: rgba(99, 255, 72, 0.56); /*#f4f4f4;*/
       			margin-top: 20px;
       			margin-bottom: 100px;
@@ -111,8 +111,6 @@
 		<header>
 			<div class="container">
 				<div class="header">
-					<img src="img/te_inverted.png" class="pull-left x">
-					<img src="img/te_inverted.png" class="pull-right x2">
 					<h1 class="text-center">
 						EntropicsFest
 					</h1>
@@ -127,34 +125,46 @@
 				<a href ng-click="start()">start</a>
 				<a href ng-click="getUsers()">users</a>
 			</div>
-			<div id="table">
-				<table>
-				    <thead>
-						<tr>
-							<th width="40px">#</th>
-							<th>Nickname</th>
-							<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Headshots</th>
-							<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Kamikaze</th>
-							<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Knives</th>
-							<th class="text-center" width="100px">Deaths</th>
-							<th class="text-center" width="100px">Kills</th>
-							<th class="text-center" width="100px">Points</th>
-				        </tr>
-				    </thead>
-				    <tbody>
-				    	<tr ng-repeat="user in users | orderBy:'-points'" class="item" jd-script>
-				    		<td><div id="id" style="display: none">{{user.id}}</div>{{ user.position }}</td>
-				    		<td><img src="img/TheEntropics.png" width="40px"> {{ user.nickname }}</td>
-				    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.headshots }}</td>
-				    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.kamikaze }}</td>
-				    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.knives }}</td>
-				    		<td class="text-center" width="100px">{{ user.deaths }}</td>
-				    		<td class="text-center" width="100px">{{ user.kills }}</td>
-				    		<td animate-on-change="user.points" class="text-center" width="100px">{{ user.points }}</td>
-				    	</tr>
-				    </tbody>
-				</table>
-			</div>
+			<table>
+				<tr>
+					<td style="width: 80px">
+						<div class="table">
+							<table>
+								<tr><th class="text-center">#</th></tr>
+								<tr ng-repeat="n in getN()" class="item"><td class="text-center">{{n}}</td></tr>
+							</table>
+						</div>
+					</td>
+					<td>
+						<div class="table">
+							<table>
+							    <thead>
+									<tr>
+										<th>Nickname</th>
+										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Headshots</th>
+										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Kamikaze</th>
+										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Knives</th>
+										<th class="text-center" width="100px">Deaths</th>
+										<th class="text-center" width="100px">Kills</th>
+										<th class="text-center" width="100px">Points</th>
+							        </tr>
+							    </thead>
+							    <tbody>
+							    	<tr ng-repeat="user in users | orderBy:'-points'" class="item" jd-script>
+							    		<td><img src="img/TheEntropics.png" width="40px"> {{ user.nickname }}</td>
+							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.headshots }}</td>
+							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.kamikaze }}</td>
+							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.knives }}</td>
+							    		<td class="text-center" width="100px">{{ user.deaths }}</td>
+							    		<td class="text-center" width="100px">{{ user.kills }}</td>
+							    		<td animate-on-change="user.points" class="text-center" width="100px">{{ user.points }}</td>
+							    	</tr>
+							    </tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</body>
 </html>		            

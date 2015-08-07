@@ -124,6 +124,7 @@ function updateDatabase(data) {
 	}
 	//console.log(Database);
 }
+
 // INTERNAL OBJECTS
 function getNewID() {return new Date().getTime();}
 
@@ -152,6 +153,7 @@ function Player(username, image, team, nicknames, rawid) {
 		}
 	}
 	this.changeTeam(team);
+	Database[this.id] = new PlayerRecord(this.id);
 }
 
 function Team(name, color, teamplayers, rawid) {
@@ -228,6 +230,11 @@ function Event(name, partecipants, eventserverid, rawid) {
 			} else if (partecipants[i][0] === "T") {
 				if (Teams[partecipants[i]] !== undefined) {
 					that.partecipants.push(partecipants[i]);
+					var teamPlayers = Teams[partecipants[i]].players;
+					for (var j in teamPlayers) {
+						console.log(teamPlayers[j]);
+						Database[teamPlayers[j]].addEvent(that.id);
+					}
 				}
 			}
 		}
@@ -268,6 +275,7 @@ io.sockets.on("connection", function(socket) {
 			if (data.id === undefined || Players[data.id] === undefined) {
 				var newPlayer = new Player(data.username, data.image, data.team, data.nicknames);
 				if (newPlayer.team !== undefined && newPlayer.team !== 0) {
+					console.log("created", newPlayer.team, newPlayer.id);
 					updateEventServers(newPlayer.id);
 				}
 			} else {
@@ -323,6 +331,7 @@ io.sockets.on("connection", function(socket) {
 				Events[data.id].name = data.name || Events[data.id].name;
 				if (data.partecipants !== undefined) {
 					Events[data.id].setPartecipants(data.partecipants);
+					console.log("partecipants of "+data.id, data.partecipants)
 				}
 				if (data.eventserverid !== undefined && Events[data.id].eventserverid !== data.eventserverid) {
 					if (EventServers[data.eventserverid] !== undefined && EventServers[data.eventserverid].assignedeventid !== 0) {
@@ -467,6 +476,14 @@ function EventServer(id, socket) {
 			}
 		}
 		EventServerSockets[that.eventserverid].emit("updateusers", {"id" : that.assignedeventid, "players" : users});
+		for(var x in users) {
+			if(Database[x]) {
+				console.log("mando il socket");
+				Database[x].addEvent(that.assignedeventid);
+				EventServerSockets[that.eventserverid].in(that.assignedeventid).emit("addUser", {id: x, nickname: users[x][0]});
+			}
+			
+		}
 	};
 }
 

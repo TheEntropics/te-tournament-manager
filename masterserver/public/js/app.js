@@ -49,10 +49,22 @@ angular.module("entropicsFest", [])
 					//$scope.users[x.id] = x;
 				});
 				$scope.users = data;
-				$scope.users.sort(updatePositions);
-				for(var x in $scope.users) {
-					$scope.users[x].position = x;
-					$scope.users[x].position++;
+
+			});
+			socket.on("addUser", function(data){
+				//console.log(data);
+				console.log(data.id, data.nickname);
+				if(find(data.id) === null) {
+					$scope.users.push({
+						id: data.id,
+						nickname: data.nickname,
+						kills: 0,
+						headshots: 0,
+						knives: 0,
+						kamikaze: 0,
+						deaths: 0,
+						points: 0
+					});
 				}
 			});
 			function find(id) {
@@ -67,17 +79,14 @@ angular.module("entropicsFest", [])
 				for(var x in data.players) {
 					var u = find(x);
 					if(u!==null) {
-						setTimeout(function() {
-							var a = [u, data.players[x]];
-							u.kills = _.sum(a, "kills");
-							u.headshots = _.sum(a, "headshots");
-							u.knives = _.sum(a, "knives");
-							u.kamikaze = _.sum(a, "kamikaze");
-							u.deaths = _.sum(a, "deaths");
-							u.points = (u.kills*10)+(u.headshots*5)+(u.knives*4);
-						}, 10);
-						
-					} else {
+						var a = [u, data.players[x]];
+						u.kills = _.sum(a, "kills");
+						u.headshots = _.sum(a, "headshots");
+						u.knives = _.sum(a, "knives");
+						u.kamikaze = _.sum(a, "kamikaze");
+						u.deaths = _.sum(a, "deaths");
+						u.points = (u.kills*10)+(u.headshots*5)+(u.knives*4);
+						console.log(u, a[0]);
 					}
 				}
 			});
@@ -103,14 +112,12 @@ angular.module("entropicsFest", [])
 					$scope.users[x].position++;
 				}
 			};
+			$scope.getN = function(){
+				var i = [];
 
-			function updatePositions(a, b) {
-				if (a.points < b.points)
-					return 1;
-				if (a.points > b.points)
-					return -1;
-				return 0;
-			}
+				for(var x in $scope.users){i.push(parseInt(x)+1);}
+				return i;
+			};
 
 			$scope.timer = 0;
 
@@ -140,9 +147,6 @@ angular.module("entropicsFest", [])
 					var $el = $(el);				
 					var newTop = idx * $config.OFFSET_Y;
 					if (newTop != parseInt($el.css('top'))) {
-						var i = $scope.find($el.find("#id").text());
-						$scope.users[i].position = el.rowIndex;
-						
 						$el.css({
 							'top': newTop
 						})
