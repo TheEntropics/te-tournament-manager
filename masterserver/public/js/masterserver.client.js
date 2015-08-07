@@ -5,6 +5,16 @@ var servers = {};
 
 var database = {};
 
+function setPreview(input, imageview) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      imageview.attr('src', e.target.result);
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
 $(document).ready(function() {
 
   var addPlayerBtn = $("#add-player");
@@ -22,7 +32,23 @@ $(document).ready(function() {
   var eventModal = $("#create-event-modal");
   var settingsModal = $("#settings-modal");
 
+  playerModal.find("#player-image-input").change(function(){
+    setPreview(this, playerModal.find("#player-image"));
+  });
+
   socket = io.connect(document.location.href); // "http://192.168.1.10:80"
+  var delivery = new Delivery(socket);
+  var deliveryCallback;
+  /*delivery.on('delivery.connect', function(delivery) {
+  });*/
+
+  delivery.on('send.success', function(fileUID) {
+    console.log("file was successfully sent.");
+    if (deliveryCallback !== undefined) {
+      deliveryCallback(fileUID);
+    }
+    deliveryCallback = undefined;
+  });
 
   settingsModal.find("#save").on("click", function() {
     var string = JSON.stringify({"players" : players, "teams" : teams, "events" : events}, null, 2);
@@ -56,16 +82,30 @@ $(document).ready(function() {
 
     playerModal.find("#username").val("");
     playerModal.find("#nicknames").val("");
+    playerModal.find("#player-image-form")[0].reset();
+    playerModal.find("#player-image").attr("src", "img/default_player.png");
     playerModal.find("#save-player").off("click");
     playerModal.find("#save-player").on("click", function() {
       playerModal.modal('hide');
       var username = playerModal.find("#username").val();
       var teamid = teamsListModal.children(".active").data("team-id");
       var nicknames = playerModal.find("#nicknames").val().split("\n");
-      console.log("create player: "+username+", new team "+teamid);
-
-      socket.emit("updateobject", {"type" : "player", "username" : username, "team" : teamid, "nicknames" : nicknames});
+      var filename = playerModal.find("#player-image-input")[0].files[0];
       playerModal.find("#username").val("");
+
+      console.log("create player: "+username+", new team "+teamid);
+      console.log(filename);
+
+      if (filename === undefined) {
+        socket.emit("updateobject", {"type" : "player", "username" : username, "team" : teamid, "nicknames" : nicknames});
+      } else {
+        deliveryCallback = function(fileUID) {
+          console.log("file was successfully sent. [AddPlayer]");
+          socket.emit("updateobject", {"type" : "player", "username" : username, "team" : teamid, "nicknames" : nicknames, "image" : fileuid});
+        };
+        var fileuid = delivery.send(filename);
+      }
+
     });
 
     teamsListModal.html("");
@@ -91,6 +131,7 @@ $(document).ready(function() {
         $(this).addClass("active");
       });
     }
+
     playerModal.modal('show');
   });
 
@@ -238,6 +279,11 @@ $(document).ready(function() {
         console.log("edit player: "+id+" "+players[id].username);
 
         playerModal.find("#username").val(players[id].username);
+        playerModal.find("#player-image-form")[0].reset();
+
+        if (players[id].image !== undefined) {
+          playerModal.find("#player-image").attr("src", "img/uploads/"+players[id].image);
+        }
 
         var nicknames = "";
         for (var k = 0; k < players[id].nicknames.length; k++) {
@@ -254,17 +300,26 @@ $(document).ready(function() {
           playerModal.modal('hide');
           var username = playerModal.find("#username").val();
           var teamid = teamsListModal.children(".active").data("team-id");
+          var filename = playerModal.find("#player-image-input")[0].files[0];
           var nicknames = playerModal.find("#nicknames").val().split("\n");
           for (var k = 0; k < nicknames.length; k++) {
             if (nicknames[k] === "") {
               nicknames.splice(k, 1);
             }
           }
-
-          console.log("save player: "+id+" "+players[id].username+" as "+username+", new team "+teamid);
-
-          socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames});
           playerModal.find("#username").val("");
+          console.log("save player: "+id+" "+players[id].username+" as "+username+", new team "+teamid);
+          console.log(filename);
+
+          if (filename === undefined) {
+            socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames});
+          } else {
+            deliveryCallback = function(fileUID) {
+              console.log("file was successfully sent. [EditPlayer]");
+              socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames, "image" : fileuid});
+            };
+            var fileuid = delivery.send(filename);
+          }
         });
 
         teamsListModal.html("");
