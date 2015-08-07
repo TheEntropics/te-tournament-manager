@@ -40,45 +40,77 @@ angular.module("entropicsFest", [])
 			$scope.sorter = 'points';
 
 			$scope.users = [];
-			$scope.players = {};
 
 			socket.on("connect", function() {
-				socket.emit("create", $("#eventId").text());
+				socket.emit("joinevent", $("#eventId").text());
 			});
 
-			/*socket.on("playerslist", function(players){
-				console.log(players);
-				$scope.players = players;
-			});*/
-			socket.on("rankings", function(rankings){
+			/*socket.on("rankings", function(rankings){
 				$scope.users = [];
 				for (var i in rankings) {
 					var player = rankings[i];
 					if (player.data !== undefined) {
-						player.points = (player.data.kills*10)+(player.data.headshots*5)+(player.data.knives*4);
+						player.points = calculatePoints(player.data);
 					}
 					$scope.users.push(player);
 				}
 				console.log($scope.users);
-			});
+			});*/
 
-			socket.on("addUser", function(data){
-				//console.log(data);
-				console.log(data.id, data.nickname);
-				if(find(data.id) === null) {
-					$scope.users.push({
-						id: data.id,
-						nickname: data.nickname,
-						image: data.image,
-						kills: 0,
-						headshots: 0,
-						knives: 0,
-						kamikaze: 0,
-						deaths: 0,
-						points: 0
-					});
+			/*socket.on("addplayer", function(player){
+				if (find(player.id) === null) {
+					console.log("Adding user: " + player.id + " " + player.username);
+					player.points = calculatePoints(player.data);
+					$scope.users.push(player);
 				}
 			});
+
+			socket.on("removeplayer", function(data){
+				console.log("Removing user: " + data.id);
+				var player = find(data.id);
+				if (player !== null) {
+					console.log("user removed.");
+					var index = $scope.users.indexOf(player);
+					$scope.users.splice(index, 1);
+				}
+			});*/
+
+			socket.on("updateplayers", function(players) {
+				var playerstoremove = {};
+				for (var i in $scope.users) {
+					playerstoremove[$scope.users[i].id] = $scope.users[i].id;
+				}
+
+				for (var playerid in players) {
+					var player = find(playerid);
+					if (player === null) {
+						// Adding new players
+						players[playerid].points = calculatePoints(players[playerid].data);
+						$scope.users.push(players[playerid]);
+					} else {
+						// Keeping the existing ones
+						player.username = players[playerid].username;
+						player.image = players[playerid].image;
+						playerstoremove[playerid] = undefined;
+					}
+				}
+
+				// Removing players
+				for (var i in playerstoremove) {
+					if (playerstoremove[i] === undefined) continue;
+					var player = find(i);
+					if (player !== null) {
+						var index = $scope.users.indexOf(player);
+						$scope.users.splice(index, 1);
+					}
+				}
+			});
+
+			function calculatePoints(data) {
+				var points = (data.kills*10)+(data.headshots*5)+(data.knives*4);
+				return points;
+			}
+
 			function find(id) {
 				for(var i in $scope.users){
 					var x = $scope.users[i];
@@ -86,19 +118,19 @@ angular.module("entropicsFest", [])
 				};
 				return null;
 			}
-			socket.on("updateRanking", function(data){
-				console.log("updateRanking");
-				for(var x in data.players) {
-					var u = find(x);
-					if(u!==null) {
-						var a = [u.data, data.players[x]];
-						u.data.kills = _.sum(a, "kills");
-						u.data.headshots = _.sum(a, "headshots");
-						u.data.knives = _.sum(a, "knives");
-						u.data.kamikaze = _.sum(a, "kamikaze");
-						u.data.deaths = _.sum(a, "deaths");
-						u.data.points = (u.data.kills*10)+(u.data.headshots*5)+(u.data.knives*4);
-						console.log(u.data, a[0]);
+
+			socket.on("updateranking", function(data){
+				console.log("updateranking");
+				for (var playerid in data.players) {
+					var player = find(playerid);
+					if(player !== null) {
+						var a = [player.data, data.players[playerid]];
+						player.data.kills = _.sum(a, "kills");
+						player.data.headshots = _.sum(a, "headshots");
+						player.data.knives = _.sum(a, "knives");
+						player.data.kamikaze = _.sum(a, "kamikaze");
+						player.data.deaths = _.sum(a, "deaths");
+						player.points = calculatePoints(player.data);
 					}
 				}
 			});

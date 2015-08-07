@@ -57,13 +57,15 @@
       			margin: 0 auto;
 			}
       		td, th{
-				padding: 10px;
+				padding-left: 10px;
+				padding-right: 10px;
 				font-size: 18px;
       		}
       		th {
       			font-size: 20px;
       		}
 					tr {
+						height: 40px;
 						color: #ddd;
 					}
       		.table {
@@ -189,7 +191,7 @@
 							    </thead>
 							    <tbody>
 							    	<tr ng-repeat="user in users | orderBy:'-points'" class="item" jd-script>
-							    		<td><img ng-src="img/uploads/{{ user.image }}" width="40px"> {{ user.username }}</td>
+							    		<td><img ng-src="img/uploads/{{ user.image }}" style="height: 40px; width: 40px;"> {{ user.username }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.headshots : 0 }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.kamikaze : 0 }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.knives : 0 }}</td>
