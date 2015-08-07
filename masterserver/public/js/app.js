@@ -91,14 +91,14 @@ angular.module("entropicsFest", [])
 				for(var x in data.players) {
 					var u = find(x);
 					if(u!==null) {
-						var a = [u, data.players[x]];
-						u.kills = _.sum(a, "kills");
-						u.headshots = _.sum(a, "headshots");
-						u.knives = _.sum(a, "knives");
-						u.kamikaze = _.sum(a, "kamikaze");
-						u.deaths = _.sum(a, "deaths");
-						u.points = (u.kills*10)+(u.headshots*5)+(u.knives*4);
-						console.log(u, a[0]);
+						var a = [u.data, data.players[x]];
+						u.data.kills = _.sum(a, "kills");
+						u.data.headshots = _.sum(a, "headshots");
+						u.data.knives = _.sum(a, "knives");
+						u.data.kamikaze = _.sum(a, "kamikaze");
+						u.data.deaths = _.sum(a, "deaths");
+						u.data.points = (u.data.kills*10)+(u.data.headshots*5)+(u.data.knives*4);
+						console.log(u.data, a[0]);
 					}
 				}
 			});
