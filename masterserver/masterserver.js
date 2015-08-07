@@ -240,6 +240,24 @@ function Event(name, partecipants, eventserverid, rawid) {
 			}
 		}
 	}
+	this.getPlayers = function() {
+		var ids = [];
+		for (var i in that.partecipants) {
+			if (that.partecipants[i][0] === "P") {
+				ids.push(that.partecipants[i]);
+			} else if (that.partecipants[i][0] === "T") {
+				if (Teams[that.partecipants[i]] !== undefined) {
+					var teamPlayers = Teams[that.partecipants[i]].players;
+					for (var j in teamPlayers) {
+						ids.push(teamPlayers[j]);
+					}
+				} else {
+					console.log(that.partecipants[i] + " does not exist! [getConnectedIDs]");
+				}
+			}
+		}
+		return ids;
+	};
 	this.setEventServer(this.eventserverid);
 	this.setPartecipants(partecipants);
 }
@@ -530,7 +548,6 @@ function EventServer(id, socket) {
 				Database[x].addEvent(that.assignedeventid);
 				EventServerSockets[that.eventserverid].in(that.assignedeventid).emit("addUser", {id: x, nickname: users[x][0], image: Players[x].image});
 			}
-
 		}
 	};
 }
@@ -555,19 +572,27 @@ var serviceSocket = require('socket.io').listen(serviceServer);
 
 serviceSocket.on("connection", function(socket) {
 	//console.log("Client connected to ServiceSocket.");
-	socket.on('create', function(room) {
-		console.log("room: "+room);
-		socket.join(room);
-		var rankings = [];
-		for(var i in Database){
-			for(var x in Database[i].events) {
-				if(x == room) {
-					Database[i].nickname = Players[Database[i].id].username;
-					rankings.push(Database[i]);
-				}
+	socket.on('create', function(eventid) {
+		if (Events[eventid] === undefined) return;
+		console.log("room: "+eventid);
+		socket.join(eventid);
+
+		var rankings = {};
+		var players = Events[eventid].getPlayers();
+		console.log(players);
+
+		for(var i in players){
+			if (Players[players[i]] === undefined) {
+				continue;
+			}
+			rankings[players[i]] = {
+				"id" : players[i],
+				"username" : Players[players[i]].username,
+				"image" : Players[players[i]].image,
+				"data" : Database[players[i]].events[eventid]
 			}
 		}
-		socket.emit("getRanking", rankings);
+		socket.emit("rankings", rankings);
 	});
 	socket.on("registeraseventserver", function(data) {
 		if (EventServers[data.id] === undefined) {

@@ -40,17 +40,28 @@ angular.module("entropicsFest", [])
 			$scope.sorter = 'points';
 
 			$scope.users = [];
+			$scope.players = {};
 
-			socket.emit("create", $("#eventId").text());
-			socket.on("getRanking", function(data){
-				console.log(data);
-				data.forEach(function(x){
-					x.points = (x.kills*10)+(x.headshots*5)+(x.knives*4);
-					//$scope.users[x.id] = x;
-				});
-				$scope.users = data;
-
+			socket.on("connect", function() {
+				socket.emit("create", $("#eventId").text());
 			});
+
+			/*socket.on("playerslist", function(players){
+				console.log(players);
+				$scope.players = players;
+			});*/
+			socket.on("rankings", function(rankings){
+				$scope.users = [];
+				for (var i in rankings) {
+					var player = rankings[i];
+					if (player.data !== undefined) {
+						player.points = (player.data.kills*10)+(player.data.headshots*5)+(player.data.knives*4);
+					}
+					$scope.users.push(player);
+				}
+				console.log($scope.users);
+			});
+
 			socket.on("addUser", function(data){
 				//console.log(data);
 				console.log(data.id, data.nickname);
@@ -115,8 +126,8 @@ angular.module("entropicsFest", [])
 			};
 			$scope.getN = function(){
 				var i = [];
-
-				for(var x in $scope.users){i.push(parseInt(x)+1);}
+				var cont = 0;
+				for(var x in $scope.users){i.push(++cont);}
 				return i;
 			};
 
