@@ -8,6 +8,7 @@
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
+  <link href="css/awesome-bootstrap-checkbox.css" rel="stylesheet">
   <!-- Styles -->
   <link href="css/style.css" rel="stylesheet">
 </head>
@@ -162,6 +163,22 @@
             <h5>Rankings</h5>
             <a id="show-rankings" href="" target="_blank" class="">Show rankings</a>
           </div>
+          <h5>Rounds</h5>
+          <div class="input-group spinner" data-min="1" data-max="10">
+            <input id="rounds" type="text" class="form-control" value="1">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
+              </button>
+              <button class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+              </button>
+            </span>
+          </div>
+          <div class="checkbox">
+            <input type="checkbox" id="warmupround" class="styled">
+            <label for="checkbox1">Warmup round</label>
+          </div>
           <h5>Event servers</h5>
           <div id="create-event-modal-servers-list" class="list-group" style="max-height: 150px; overflow: auto;">
             <button type="button" data-team="0" class="list-group-item">No servers</button>
@@ -211,6 +228,7 @@
   <!-- Bootstrap -->
   <script src="js/bootstrap.min.js"></script>
   <script src="js/bootstrap-colorpicker.min.js"></script>
+  <script src="js/number-spinner.js"></script>
   <!-- Custom -->
   <script src="js/json2.js"></script>
   <script src="/socket.io/socket.io.js"></script>

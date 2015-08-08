@@ -16,8 +16,8 @@ console.log("TheEntropics Mastererver v0.0.1");
 var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 console.log();
-console.log("Title: " + config.title);
-console.log();
+//console.log("Title: " + config.title);
+///console.log();
 
 var Players = {};
 var Teams = {};
@@ -27,13 +27,6 @@ var Events = {};
 var Database = {};
 function PlayerRecord(id) {
 	this.id = id;
-
-	/*this.kills = 0;
-	this.deaths = 0;
-	this.headshots = 0;
-	this.knives = 0;
-	this.kamikaze = 0;
-	this.killstreak = 0;*/
 
 	this.data = {
 		"kills" : 0,
@@ -205,11 +198,13 @@ function Team(name, color, teamplayers, rawid) {
 	}
 }
 
-function Event(name, partecipants, eventserverid, rawid) {
+function Event(name, partecipants, eventserverid, rounds, warmupround, rawid) {
 	this.id = rawid || "E"+getNewID();
 	this.type = "event";
 	this.name = name;
 	this.partecipants = [];
+	this.rounds = rounds || 1;
+	this.warmupround = warmupround || false;
 	this.eventserverid = eventserverid || 0;
 	Events[this.id] = this;
 	var that = this;
@@ -431,11 +426,13 @@ io.sockets.on("connection", function(socket) {
 						//console.log("Server has an event alredy, removing it: " + oldeventid);
 					}
 				}
-				var newEvent = new Event(data.name, data.partecipants, data.eventserverid);
+				var newEvent = new Event(data.name, data.partecipants, data.eventserverid, data.rounds, data.warmupround);
 				updateEventServers(newEvent.id);
 			} else {
 				// Update Event
 				Events[data.id].name = data.name || Events[data.id].name;
+				Events[data.id].rounds = data.rounds || Events[data.id].rounds;
+				Events[data.id].warmupround = data.warmupround || Events[data.id].warmupround;
 				if (data.partecipants !== undefined) {
 					Events[data.id].setPartecipants(data.partecipants);
 					//console.log("partecipants of "+data.id, data.partecipants)
@@ -505,7 +502,7 @@ io.sockets.on("connection", function(socket) {
 		}
 		if (data.events !== undefined) {
 			for (var i in data.events) {
-				var newEvent = new Event(data.events[i].name, data.events[i].partecipants, 0, data.events[i].id);
+				var newEvent = new Event(data.events[i].name, data.events[i].partecipants, 0, data.events[i].rounds, data.events[i].warmupround, data.events[i].id);
 			}
 		}
 		sendData();
@@ -564,6 +561,7 @@ var EventServerSockets = {};
 function EventServer(id, socket) {
 	this.eventserverid = id;
 	this.assignedeventid = 0;
+	this.servedrounds = 0;
 	this.roundstarted = false;
 	EventServerSockets[this.eventserverid] = socket;
 	EventServerSockets[this.eventserverid].eventserverid = id;
@@ -572,6 +570,7 @@ function EventServer(id, socket) {
 	this.assignEvent = function(id) {
 		if (that.assignedeventid !== 0) that.unassignFromEvent();
 		that.assignedeventid = id;
+		that.servedrounds = 0;
 		EventServerSockets[that.eventserverid].emit("seteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
 		Events[id].sendUserData();
 	};
@@ -670,33 +669,70 @@ serviceSocket.on("connection", function(socket) {
 		sendData();
 
 		socket.on("roundstart", function() {
-			console.log("EventServer round started: " + socket.eventserverid);
+			var eventid = EventServers[socket.eventserverid].assignedeventid;
+			var servedrounds = EventServers[socket.eventserverid].servedrounds;
+
+			if (eventid !== 0) {
+				if (Events[eventid].warmupround && servedrounds === 0) {
+					console.log("EventServer warmup round started: " + socket.eventserverid);
+				} else {
+					console.log("EventServer round " + servedrounds + " started: " + socket.eventserverid);
+				}
+			} else {
+				console.log("EventServer round started: " + socket.eventserverid);
+			}
 			EventServers[socket.eventserverid].roundstarted = true;
 
-			if (EventServers[socket.eventserverid].assignedeventid !== 0) {
-				var eventid = EventServers[socket.eventserverid].assignedeventid;
+			if (eventid !== 0) {
 				serviceSocket.in(eventid).emit("roundstarted");
 			}
 		});
 
 		socket.on("updateonplayersdata", function(data) {
-			console.log("EventServer sent players data: " + socket.eventserverid);
-			console.log(data.players);
-			serviceSocket.in(data.eventid).emit("updateranking", {players: data.players});
-			serviceSocket.in("rankings").emit("updateranking", {players: data.players});
-			updateDatabase(data);
+			var eventid = EventServers[socket.eventserverid].assignedeventid;
+			var servedrounds = EventServers[socket.eventserverid].servedrounds;
+
+			if (Events[eventid].warmupround && servedrounds === 0) {
+				console.log("EventServer sent players data: ignoring them. (Warmup round)");
+			} else {
+				console.log("EventServer sent players data: " + socket.eventserverid);
+				console.log(data.players);
+				serviceSocket.in(data.eventid).emit("updateranking", {players: data.players});
+				serviceSocket.in("rankings").emit("updateranking", {players: data.players});
+				updateDatabase(data);
+			}
 		});
 
 		socket.on("roundend", function() {
-			console.log("EventServer round ended: " + socket.eventserverid);
-			if (EventServers[socket.eventserverid].assignedeventid !== 0) {
-				var eventid = EventServers[socket.eventserverid].assignedeventid;
+			var eventid = EventServers[socket.eventserverid].assignedeventid;
+			var servedrounds = EventServers[socket.eventserverid].servedrounds;
+
+			if (eventid !== 0) {
+				if (Events[eventid].warmupround && servedrounds === 0) {
+					console.log("EventServer warmup round ended: " + socket.eventserverid);
+				} else {
+					console.log("EventServer round " + servedrounds + " ended: " + socket.eventserverid);
+				}
+			} else {
+				console.log("EventServer round ended: " + socket.eventserverid);
+			}
+
+			if (eventid !== 0) {
 				serviceSocket.in(eventid).emit("roundended");
 			}
-			if (EventServers[socket.eventserverid].roundstarted) {
-				// Unassign event only if the round was started
-				if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
-					Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+			EventServers[socket.eventserverid].servedrounds++;
+			servedrounds = EventServers[socket.eventserverid].servedrounds;
+
+			if (eventid !== 0) {
+				var maxrounds = Events[eventid].rounds;
+				if (Events[eventid].warmupround) maxrounds++;
+				// Unassign event only if the event ended (all rounds have been played)
+				if (servedrounds >= maxrounds) {
+					if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {
+						Events[EventServers[socket.eventserverid].assignedeventid].setEventServer(0);
+						sendData();
+						console.log("Event ended: " + eventid);
+					}
 				}
 			}
 			EventServers[socket.eventserverid].roundstarted = false;

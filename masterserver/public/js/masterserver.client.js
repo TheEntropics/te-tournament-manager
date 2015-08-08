@@ -163,6 +163,8 @@ $(document).ready(function() {
     var serversListModal = eventModal.find("#create-event-modal-servers-list");
     eventModal.find("#eventname").val("");
     eventModal.find("#rankings").hide();
+    eventModal.find("#rounds").val("1");
+    eventModal.find("#warmupround").attr("checked", false);
 
     eventModal.find("#save-event").off("click");
     eventModal.find("#save-event").on("click", function() {
@@ -171,6 +173,8 @@ $(document).ready(function() {
       var eventserverid = serversListModal.children(".active").data("server-id");
       var teamsSelected = teamsListModal.find(".active");
       var playersSelected = playersListModal.find(".active");
+      var rounds = eventModal.find("#rounds").val();
+      var warmupround = eventModal.find("#warmupround").is(':checked');
 
       var partecipants = [];
       teamsSelected.each(function() {
@@ -182,7 +186,7 @@ $(document).ready(function() {
 
       console.log("create event: "+eventname);
 
-      socket.emit("updateobject", {"type" : "event", "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid});
+      socket.emit("updateobject", {"type" : "event", "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid, "rounds" : rounds, "warmupround" : warmupround});
     });
 
     // Show teams
@@ -433,6 +437,8 @@ $(document).ready(function() {
         var playersListModal = eventModal.find("#create-event-modal-players-list");
         var serversListModal = eventModal.find("#create-event-modal-servers-list");
         eventModal.find("#eventname").val(events[id].name);
+        eventModal.find("#rounds").val(events[id].rounds);
+        eventModal.find("#warmupround").attr("checked", events[id].warmupround);
         eventModal.find("#rankings").show();
         eventModal.find("#show-rankings").attr("href", "/"+id);
 
@@ -443,6 +449,8 @@ $(document).ready(function() {
           var eventserverid = serversListModal.children(".active").data("server-id");
           var teamsSelected = teamsListModal.find(".active");
           var playersSelected = playersListModal.find(".active");
+          var rounds = eventModal.find("#rounds").val();
+          var warmupround = eventModal.find("#warmupround").is(':checked');
 
           var partecipants = [];
           teamsSelected.each(function() {
@@ -454,7 +462,7 @@ $(document).ready(function() {
 
           console.log("create event: "+eventname);
 
-          socket.emit("updateobject", {"type" : "event", "id" : id, "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid});
+          socket.emit("updateobject", {"type" : "event", "id" : id, "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid, "rounds" : rounds});
         });
 
         var tempids = {};

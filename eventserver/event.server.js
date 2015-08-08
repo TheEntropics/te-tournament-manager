@@ -212,34 +212,7 @@ function resetData() {
 
 // LOG FILE
 logfile.on("line", function(line) {
-	/*var actions = line.match(new RegExp(gameconfig.event_regex, ""));
-	if (actions == null) return;
-	var action = actions[1];
-	var message;
-	if (action === gameconfig.kill_event) {
-		var bywhoid = line.match(new RegExp(gameconfig.kill_event_bywhoid_regex, ""))[1];
-		var towhoid = line.match(new RegExp(gameconfig.kill_event_towhoid_regex, ""))[1];
-		var bywho = line.match(new RegExp(gameconfig.kill_event_bywho_regex, ""))[1];
-		var towho = line.match(new RegExp(gameconfig.kill_event_towho_regex, ""))[1];
-		message = bywho + " killed " + towho;
 
-		// Kamikaze
-		var kamikaze = line.match(new RegExp(gameconfig.kill_event_kamikaze_regex, ""));
-		if (kamikaze != null) {
-			message = bywho + " kamikaze!";
-		}
-	} else if (action === gameconfig.hit_event) {
-		var headshot_data = line.match(new RegExp(gameconfig.headshot_event_regex, ""));
-		if (headshot_data != null) {
-			var bywhoid = line.match(new RegExp(gameconfig.hit_event_bywhoid_regex, ""))[1];
-			var bywho = line.match(new RegExp(gameconfig.hit_event_bywho_regex, ""))[1];
-			message = bywho + " made a headshot!";
-		} else {
-			return; // Irrelevant hit.
-		}
-	} else {
-		return; // Irrelevant event.
-	}*/
 	var message = "";
 	var changesmade = false;
 	// KILL EVENT
@@ -255,14 +228,6 @@ logfile.on("line", function(line) {
 				var towhoid = line.match(new RegExp(gameconfig.kill_event_towhoid_regex, ""))[1];
 				var bywho = line.match(new RegExp(gameconfig.kill_event_bywho_regex, ""))[1];
 				var towho = line.match(new RegExp(gameconfig.kill_event_towho_regex, ""))[1];
-
-				// Kamikaze
-				/*if (gameconfig.kill_event_kamikaze_regex !== undefined) {
-					var kamikaze = line.match(new RegExp(gameconfig.kill_event_kamikaze_regex, ""));
-					if (kamikaze != null) {
-						message = bywho + " kamikaze!";
-					}
-				}*/
 
 				// Creating players if needed
 				if (Players[bywhoid] === undefined || Players[bywhoid].id_check !== (bywhoid+bywho)) {

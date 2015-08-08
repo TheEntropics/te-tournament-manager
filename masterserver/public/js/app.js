@@ -40,21 +40,25 @@ angular.module("entropicsFest", [])
 			$scope.sorter = 'points';
 
 			$scope.users = [];
+			$scope.eventid = $("#eventId").text();
 
 			socket.on("connect", function() {
+				if ($scope.eventid === "rankings") $scope.end = true;
 				socket.emit("joinevent", $("#eventId").text());
 			});
 
 			socket.on("roundstarted", function() {
+				if ($scope.eventid === "rankings") return;
 				$scope.end = false;
 			});
 
 			socket.on("roundended", function() {
+				if ($scope.eventid === "rankings") return;
 				$scope.end = true;
 			});
 
 			socket.on("updateplayers", function(players) {
-				$scope.end = false;
+				if ($scope.eventid !== "rankings") $scope.end = false;
 				var playerstoremove = {};
 				for (var i in $scope.users) {
 					playerstoremove[$scope.users[i].id] = $scope.users[i].id;
@@ -88,7 +92,8 @@ angular.module("entropicsFest", [])
 			function calculatePoints(data) {
 				var points = (data.kills*10)+(data.headshots*5)+(data.knives*4)+(data.kamikaze*5);
 				var killsdeathsratio = data.deaths !== 0 ? data.kills / data.deaths : 0;
-				points -= killsdeathsratio * 7;
+				points -= Math.round(killsdeathsratio * 7);
+
 				return points;
 			}
 
