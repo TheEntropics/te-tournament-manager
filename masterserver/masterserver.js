@@ -236,15 +236,18 @@ function Event(name, partecipants, eventserverid, rawid) {
 			if (partecipants[i][0] === "P") {
 				if (Players[partecipants[i]] !== undefined) {
 					that.partecipants.push(partecipants[i]);
-					Database[partecipants[i]].addEvent(that.id);
+					if (Database[partecipants[i]].events[that.id] === undefined) {
+						Database[partecipants[i]].addEvent(that.id);
+					}
 				}
 			} else if (partecipants[i][0] === "T") {
 				if (Teams[partecipants[i]] !== undefined) {
 					that.partecipants.push(partecipants[i]);
 					var teamPlayers = Teams[partecipants[i]].players;
 					for (var j in teamPlayers) {
-						console.log(teamPlayers[j]);
-						Database[teamPlayers[j]].addEvent(that.id);
+						if (Database[teamPlayers[j]].events[that.id] === undefined) {
+							Database[teamPlayers[j]].addEvent(that.id);
+						}
 					}
 				}
 			}
