@@ -130,6 +130,7 @@ function updateDatabase(data) {
 		Database[player.id].updateDeaths(player.deaths, data.eventid);
 		Database[player.id].updateKamikaze(player.kamikaze, data.eventid);
 		Database[player.id].updateHeadshots(player.headshots, data.eventid);
+		Database[player.id].updateKnives(player.knives, data.eventid);
 		Database[player.id].updateKillstreak(player.killstreak, data.eventid);
 	}
 	//console.log(Database);

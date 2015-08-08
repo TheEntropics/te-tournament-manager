@@ -99,6 +99,7 @@ function notifyChanges() {
 				var kamikaze = player.kamikaze - player.last_kamikaze;
 				var headshots = player.headshots - player.last_headshots;
 				var deaths = player.deaths - player.last_deaths;
+				var knives = player.knives - player.last_knives;
 				var killstreak = player.killstreak;
 
 				userdata[player.playerid] = {
@@ -107,6 +108,7 @@ function notifyChanges() {
 					"kamikaze": (kamikaze !== 0 ? kamikaze : undefined),
 					"headshots": (headshots !== 0 ? headshots : undefined),
 					"deaths": (deaths !== 0 ? deaths : undefined),
+					"knives": (knives !== 0 ? knives : undefined),
 					"killstreak": (killstreak !== 0 ? killstreak : undefined)
 				};
 
@@ -114,6 +116,7 @@ function notifyChanges() {
 				player.last_kamikaze = player.kamikaze;
 				player.last_headshots = player.headshots;
 				player.last_deaths = player.deaths;
+				player.last_knives = player.knives;
 				player.datachanged = false;
 				cont++;
 			}
@@ -140,6 +143,7 @@ function Player(id, username) {
 	this.kamikaze = 0;
 	this.headshots = 0;
 	this.deaths = 0;
+	this.knives = 0;
 	this.killstreak = 0;
 
 	this.lastkill_timestamp = 0;
@@ -150,6 +154,7 @@ function Player(id, username) {
 	this.last_kamikaze = 0;
 	this.last_headshots = 0;
 	this.last_deaths = 0;
+	this.last_knives = 0;
 	//this.last_killstreak = 0;
 
 	this.datachanged = false;
@@ -170,6 +175,10 @@ function Player(id, username) {
 	};
 	this.addHeadshot = function() {
 		that.headshots++;
+		that.datachanged = true;
+	};
+	this.addKnife = function() {
+		that.knives++;
 		that.datachanged = true;
 	};
 	this.addDeath = function() {
@@ -317,6 +326,35 @@ logfile.on("line", function(line) {
 		}
 	}
 
+	// KNIFE EVENT
+	regexstr = gameconfig.event_regex;
+	if (gameconfig.knife_event_regex !== undefined) regexstr = gameconfig.knife_event_regex;
+
+	match = line.match(new RegExp(regexstr, ""));
+	if (match != null) {
+		match = match[1];
+		if (match === gameconfig.knife_event_match || gameconfig.knife_event_match === "") {
+			if (gameconfig.knife_event_id_regex !== undefined && gameconfig.knife_event_name_regex !== undefined) {
+				var userid = line.match(new RegExp(gameconfig.knife_event_id_regex, ""))[1];
+				var name = line.match(new RegExp(gameconfig.knife_event_name_regex, ""))[1];
+
+				// Creating player if needed
+				if (Players[userid] === undefined || Players[userid].id_check !== (userid+name)) {
+					Players[userid] = new Player(userid, name);
+					if (References[name] !== undefined) {
+						Players[userid].setPlayerID(References[name]);
+					}
+					message += name + " (" + (Players[userid].playerid !== 0 ? Players[userid].playerid : userid) + ") joined the game. [KnifeEvent]\n";
+				}
+
+				Players[userid].addKnife();
+
+				message += (message === "" ? "" : "\n") + name + " made a knife kill! [" + Players[userid].knives + "]";
+				changesmade = true;
+			}
+		}
+	}
+
 	// HIT EVENT
 	regexstr = gameconfig.event_regex;
 	if (gameconfig.hit_event_regex !== undefined) regexstr = gameconfig.hit_event_regex;
@@ -337,7 +375,7 @@ logfile.on("line", function(line) {
 							// Creating player if needed
 							if (Players[bywhoid] === undefined || Players[bywhoid].id_check !== (bywhoid+bywho)) {
 								Players[bywhoid] = new Player(bywhoid, bywho);
-								if (References[username] !== undefined) {
+								if (References[bywho] !== undefined) {
 									Players[bywhoid].setPlayerID(References[bywho]);
 								}
 								message += bywho + " (" + (Players[bywhoid].playerid !== 0 ? Players[bywhoid].playerid : bywhoid) + ") joined the game. [HitEvent]\n";
