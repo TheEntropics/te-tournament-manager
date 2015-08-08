@@ -671,6 +671,11 @@ serviceSocket.on("connection", function(socket) {
 		socket.on("roundstart", function() {
 			console.log("EventServer round started: " + socket.eventserverid);
 			EventServers[socket.eventserverid].roundstarted = true;
+
+			if (EventServers[socket.eventserverid].assignedeventid !== 0) {
+				var eventid = EventServers[socket.eventserverid].assignedeventid;
+				serviceSocket.in(eventid).emit("roundstarted");
+			}
 		});
 
 		socket.on("updateonplayersdata", function(data) {
@@ -683,6 +688,10 @@ serviceSocket.on("connection", function(socket) {
 
 		socket.on("roundend", function() {
 			console.log("EventServer round ended: " + socket.eventserverid);
+			if (EventServers[socket.eventserverid].assignedeventid !== 0) {
+				var eventid = EventServers[socket.eventserverid].assignedeventid;
+				serviceSocket.in(eventid).emit("roundended");
+			}
 			if (EventServers[socket.eventserverid].roundstarted) {
 				// Unassign event only if the round was started
 				if (Events[EventServers[socket.eventserverid].assignedeventid] !== undefined) {

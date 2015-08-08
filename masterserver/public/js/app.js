@@ -45,37 +45,16 @@ angular.module("entropicsFest", [])
 				socket.emit("joinevent", $("#eventId").text());
 			});
 
-			/*socket.on("rankings", function(rankings){
-				$scope.users = [];
-				for (var i in rankings) {
-					var player = rankings[i];
-					if (player.data !== undefined) {
-						player.points = calculatePoints(player.data);
-					}
-					$scope.users.push(player);
-				}
-				console.log($scope.users);
-			});*/
-
-			/*socket.on("addplayer", function(player){
-				if (find(player.id) === null) {
-					console.log("Adding user: " + player.id + " " + player.username);
-					player.points = calculatePoints(player.data);
-					$scope.users.push(player);
-				}
+			socket.on("roundstarted", function() {
+				$scope.end = false;
 			});
 
-			socket.on("removeplayer", function(data){
-				console.log("Removing user: " + data.id);
-				var player = find(data.id);
-				if (player !== null) {
-					console.log("user removed.");
-					var index = $scope.users.indexOf(player);
-					$scope.users.splice(index, 1);
-				}
-			});*/
+			socket.on("roundended", function() {
+				$scope.end = true;
+			});
 
 			socket.on("updateplayers", function(players) {
+				$scope.end = false;
 				var playerstoremove = {};
 				for (var i in $scope.users) {
 					playerstoremove[$scope.users[i].id] = $scope.users[i].id;
