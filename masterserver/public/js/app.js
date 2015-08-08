@@ -131,6 +131,8 @@ angular.module("entropicsFest", [])
 						player.data.kamikaze = _.sum(a, "kamikaze");
 						player.data.deaths = _.sum(a, "deaths");
 						player.points = calculatePoints(player.data);
+						$window.clearTimeout($scope.timer);
+						$scope.timer = $window.setTimeout(rearrange, 100);
 					}
 				}
 			});
