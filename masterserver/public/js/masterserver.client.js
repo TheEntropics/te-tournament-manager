@@ -162,6 +162,7 @@ $(document).ready(function() {
     var playersListModal = eventModal.find("#create-event-modal-players-list");
     var serversListModal = eventModal.find("#create-event-modal-servers-list");
     eventModal.find("#eventname").val("");
+    eventModal.find("#rankings").hide();
 
     eventModal.find("#save-event").off("click");
     eventModal.find("#save-event").on("click", function() {
@@ -432,6 +433,8 @@ $(document).ready(function() {
         var playersListModal = eventModal.find("#create-event-modal-players-list");
         var serversListModal = eventModal.find("#create-event-modal-servers-list");
         eventModal.find("#eventname").val(events[id].name);
+        eventModal.find("#rankings").show();
+        eventModal.find("#show-rankings").attr("href", "/"+id);
 
         eventModal.find("#save-event").off("click");
         eventModal.find("#save-event").on("click", function() {

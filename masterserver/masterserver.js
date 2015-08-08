@@ -28,18 +28,27 @@ var Database = {};
 function PlayerRecord(id) {
 	this.id = id;
 
-	this.kills = 0;
+	/*this.kills = 0;
 	this.deaths = 0;
 	this.headshots = 0;
 	this.knives = 0;
 	this.kamikaze = 0;
-	this.killstreak = 0;
+	this.killstreak = 0;*/
+
+	this.data = {
+		"kills" : 0,
+		"deaths" : 0,
+		"headshots" : 0,
+		"knives" : 0,
+		"kamikaze" : 0,
+		"killstreak" : 0
+	}
 
 	this.events = {};
 	var that = this;
 	this.updateKills = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		that.kills += n;
+		that.data.kills += n;
 		if (eventid === undefined) return;
 		if (that.events[eventid] === undefined) {
 			that.addEvent(eventid);
@@ -49,7 +58,7 @@ function PlayerRecord(id) {
 
 	this.updateDeaths = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		that.deaths += n;
+		that.data.deaths += n;
 		if (eventid === undefined) return;
 		if (that.events[eventid] === undefined) {
 			that.addEvent(eventid);
@@ -59,7 +68,7 @@ function PlayerRecord(id) {
 
 	this.updateHeadshots = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		that.headshots += n;
+		that.data.headshots += n;
 		if (eventid === undefined) return;
 		if (that.events[eventid] === undefined) {
 			that.addEvent(eventid);
@@ -69,7 +78,7 @@ function PlayerRecord(id) {
 
 	this.updateKnives = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		that.knives += n;
+		that.data.knives += n;
 		if (eventid === undefined) return;
 		if (that.events[eventid] === undefined) {
 			that.addEvent(eventid);
@@ -79,7 +88,7 @@ function PlayerRecord(id) {
 
 	this.updateKamikaze = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		that.kamikaze += n;
+		that.data.kamikaze += n;
 		if (eventid === undefined) return;
 		if (that.events[eventid] === undefined) {
 			that.addEvent(eventid);
@@ -89,8 +98,8 @@ function PlayerRecord(id) {
 
 	this.updateKillstreak = function(n, eventid) {
 		if (n === undefined || n === 0) return;
-		if (that.killstreak < n) {
-			that.killstreak = n;
+		if (that.data.killstreak < n) {
+			that.data.killstreak = n;
 			if (eventid === undefined) return;
 			if (that.events[eventid] === undefined) {
 				that.addEvent(eventid);
@@ -386,7 +395,6 @@ io.sockets.on("connection", function(socket) {
 				Players[data.id].image = data.image || Players[data.id].image;
 				//console.log(Players[data.id]);
 				updateEventServers(data.id);
-				//updatePlayerChangesRankings(data.id);
 			}
 		} else if (data.type === "team") {
 			if (data.name !== undefined) {
@@ -568,47 +576,6 @@ function EventServer(id, socket) {
 		EventServerSockets[that.eventserverid].emit("unseteventid", {"id" : that.assignedeventid, "name" : Events[that.assignedeventid].name});
 		that.assignedeventid = 0;
 	};
-	/*this.getConnectedIDs = function() {
-		if (that.assignedeventid === 0) return [];
-		var ids = Events[that.assignedeventid].partecipants.slice();
-		var partecipants = Events[that.assignedeventid].partecipants;
-		for (var i in partecipants) {
-			if (partecipants[i][0] === "T") {
-				if (Teams[partecipants[i]] !== undefined) {
-					var teamPlayers = Teams[partecipants[i]].players;
-					for (var j in teamPlayers) {
-						ids.push(teamPlayers[j]);
-					}
-				} else {
-					console.log(partecipants[i] + " does not exist! [getConnectedIDs]");
-				}
-			}
-		}
-		ids.push(that.assignedeventid);
-		return ids;
-	};
-	this.objectChanged = function(id) {
-		var ids = that.getConnectedIDs();
-		if (ids.indexOf(id) !== -1) {
-			that.sendUserData();
-		}
-	};
-	this.sendUserData = function() {
-		if (that.assignedeventid === 0) return;
-		var partecipants = Events[that.assignedeventid].partecipants;
-		var users = {};
-		for (var i in partecipants) {
-			if (partecipants[i][0] === "P") {
-				users[partecipants[i]] = Players[partecipants[i]].nicknames;
-			} else if (partecipants[i][0] === "T") {
-				var teamPlayers = Teams[partecipants[i]].players;
-				for (var j in teamPlayers) {
-					users[teamPlayers[j]] = Players[teamPlayers[j]].nicknames;
-				}
-			}
-		}
-		EventServerSockets[that.eventserverid].emit("updateusers", {"id" : that.assignedeventid, "players" : users});
-	};*/
 }
 
 function updateEventServers(id) {
@@ -617,40 +584,21 @@ function updateEventServers(id) {
 			Events[i].objectChanged(id);
 		}
 	}
+
+	var rankings = {};
+	for(var playerid in Players){
+		if (Players[playerid] === undefined) {
+			continue;
+		}
+		rankings[playerid] = {
+			"id" : playerid,
+			"username" : Players[playerid].username,
+			"image" : Players[playerid].image,
+			"data" : Database[playerid].data
+		}
+	}
+	serviceSocket.in("rankings").emit("updateplayers", rankings);
 }
-
-/*function updateEventRanking(id) {
-	for (var i in Events) {
-		if (Events[i] !== undefined) {
-			Events[i].objectChanged(id);
-		}
-	}
-}*/
-
-/*function updatePlayerChangesRankings(playerid, action) {
-	for (var eventid in Events) {
-		if (Events[eventid] !== undefined) {
-			var players = Events[eventid].getPlayers();
-			if (players.indexOf(playerid) !== -1) {
-				var player = Players[playerid];
-
-				if (action === undefined || action === "add") {
-					Database[playerid].addEvent(eventid);
-					serviceSocket.in(eventid).emit("addplayer", {
-						"id": playerid,
-						"username": player.username,
-						"image": player.image,
-						"data" : Database[playerid].events[eventid]
-					});
-				} else if (action === "remove") {
-					serviceSocket.in(eventid).emit("removeplayer", {
-						"id": playerid
-					});
-				}
-			}
-		}
-	}
-}*/
 
 // SERVICE PORT
 var serviceApp = express();
@@ -665,23 +613,37 @@ var serviceSocket = require('socket.io').listen(serviceServer);
 serviceSocket.on("connection", function(socket) {
 	//console.log("Client connected to ServiceSocket.");
 	socket.on('joinevent', function(eventid) {
-		if (Events[eventid] === undefined) return;
+		if (Events[eventid] === undefined && eventid !== "rankings") return;
 		socket.join(eventid);
 
 		var rankings = {};
-		var players = Events[eventid].getPlayers();
-
-		for(var i in players){
-			if (Players[players[i]] === undefined) {
-				continue;
+		if (eventid === "rankings") {
+			for(var playerid in Players){
+				if (Players[playerid] === undefined) {
+					continue;
+				}
+				rankings[playerid] = {
+					"id" : playerid,
+					"username" : Players[playerid].username,
+					"image" : Players[playerid].image,
+					"data" : Database[playerid].data
+				}
 			}
-			rankings[players[i]] = {
-				"id" : players[i],
-				"username" : Players[players[i]].username,
-				"image" : Players[players[i]].image,
-				"data" : Database[players[i]].events[eventid]
+		} else {
+			var players = Events[eventid].getPlayers();
+			for(var i in players){
+				if (Players[players[i]] === undefined) {
+					continue;
+				}
+				rankings[players[i]] = {
+					"id" : players[i],
+					"username" : Players[players[i]].username,
+					"image" : Players[players[i]].image,
+					"data" : Database[players[i]].events[eventid]
+				}
 			}
 		}
+
 		socket.emit("updateplayers", rankings);
 	});
 	socket.on("registeraseventserver", function(data) {
@@ -712,6 +674,7 @@ serviceSocket.on("connection", function(socket) {
 			console.log("EventServer sent players data: " + socket.eventserverid);
 			console.log(data.players);
 			serviceSocket.in(data.eventid).emit("updateranking", {players: data.players});
+			serviceSocket.in("rankings").emit("updateranking", {players: data.players});
 			updateDatabase(data);
 		});
 
