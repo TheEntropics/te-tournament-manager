@@ -92,7 +92,7 @@ function notifyChanges() {
 		var userdata = {};
 		var cont = 0;
 		for (var i in Players) {
-			if (Players[i].playerid !== 0 && Players[i].datachanged) {
+			if (Players[i] !== undefined && Players[i].playerid !== 0 && Players[i].datachanged) {
 				var player = Players[i];
 
 				var kills = player.kills - player.last_kills;
@@ -200,7 +200,7 @@ function generateReferences(players) {
 }
 function checkPlayers() {
 	for (var i in Players) {
-		if (References[Players[i].username] !== undefined) {
+		if (Players[i] !== undefined && References[Players[i].username] !== undefined) {
 			Players[i].setPlayerID(References[Players[i].username]);
 			console.log("Found player: " + Players[i].username + "(" + Players[i].playerid + ")");
 		}
@@ -375,11 +375,6 @@ logfile.on("line", function(line) {
 					if (oldUser.username !== username) {
 
 						if (oldUser.playerid !== 0) {
-							/*if (References[username] === undefined) {
-								// Delete old player data
-								Players[userid] = new Player(userid, username);
-								message = username + " (" + userid + ") joined the game. [Nickname changed]";
-							} else */
 							if (oldUser.playerid !== References[username]) {
 								// Delete old player data
 								Players[userid] = new Player(userid, username);
