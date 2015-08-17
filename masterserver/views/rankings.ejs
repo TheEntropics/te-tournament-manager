@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>EntropicsFest</title>
+		<title><%=title%></title>
 		<link rel="stylesheet" href="/css/bootstrap.min.css">
 		<link rel="stylesheet" href="/css/animate.css">
 		<link rel="stylesheet" href="/css/style.css">
@@ -12,13 +12,13 @@
 		<script src="/js/lodash.min.js"></script>
 		<script src="/js/app.js"></script>
 	</head>
-	<body ng-app="entropicsFest">
+	<body ng-app="entropicsFest" style="background-image: url('<%=background%>');">
 		<header>
 			<div class="container">
 				<div class="header">
 					<h1 class="text-center">
-						<img src="/img/te_inverted.png" class="xc">
-						EntropicsFest
+						<img src=<%=logo%> class="xc">
+						<%=title%>
 					</h1>
 				</div>
 			</div>
@@ -75,8 +75,8 @@
 			</table>
 		</div>
 
-		<img src="img/stripes.png" class="stripes-left">
-		<img src="img/stripes.png" class="stripes-right">
+		<img src=<%=stripes%> class="stripes-left">
+		<img src=<%=stripes%> class="stripes-right">
 
 	</body>
 </html>

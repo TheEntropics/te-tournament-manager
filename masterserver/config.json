@@ -1,3 +1,6 @@
 {
-	"title" : "Masterserver"
+	"title" : "EntropicsFest",
+	"logo" : "/img/te_inverted.png",
+	"stripes" : "/img/stripes.png",
+	"background" : "/img/te_pattern.png"
 }

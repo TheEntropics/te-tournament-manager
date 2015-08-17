@@ -536,7 +536,7 @@ app.get("/", function(req, res) {
 	res.render("index");
 });
 app.get("/:id", function(req, res) {
-	res.render('rankings', {id: req.params.id});
+	res.render('rankings', {id: req.params.id, title: config.title, logo: config.logo, stripes: config.stripes, background: config.background});
 });
 
 app.get('/img/uploads/*', function(req, res){
