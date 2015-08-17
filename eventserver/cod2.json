@@ -1,0 +1,33 @@
+{
+	"gamename" : "Call of Duty 2",
+	"event_regex" : "^[ ]*[\\d]+:[\\d]{2} ([a-zA-Z]+)",
+
+	"kill_event_match" : "K",
+	"hit_event_match" : "K",
+	"headshot_event_match" : "MOD_HEAD_SHOT",
+	"userjoin_event_match" : "J",
+	"userleave_event_match" : "Q",
+	"roundstart_event_match" : "InitGame",
+	"roundend_event_match" : "ShutdownGame",
+
+	"kill_event_regex" : "^[ ]*[\\d]+:[\\d]{2} (K);[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_towhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_towho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;([a-zA-Z\\d]*);[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"kill_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
+	"kill_event_weapon_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;([^;]+);",
+
+	"headshot_event_regex" : "^[ ]*[\\d]+:[\\d]{2} K;[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;.+(MOD_HEAD_SHOT)",
+	"hit_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
+	"hit_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+	
+	"knife_event_regex" : "^[ ]*[\\d]+:[\\d]{2} K;[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;.+(MOD_MELEE)",
+	"knife_event_match" : "MOD_MELEE",
+	"knife_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+	"knife_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z0-9]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z0-9]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
+
+	"userjoin_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} J;[a-zA-Z0-9]*;[\\d]*;(.+)",
+	"userjoin_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} J;[a-zA-Z0-9]*;([\\d]*);",
+
+	"userleave_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} Q;[a-zA-Z0-9]*;([\\d]*);"
+}
