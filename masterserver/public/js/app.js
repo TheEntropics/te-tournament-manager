@@ -58,7 +58,7 @@ angular.module("entropicsFest", [])
 			});
 
 			socket.on("updateplayers", function(players) {
-				if ($scope.eventid !== "rankings") $scope.end = false;
+				//if ($scope.eventid !== "rankings") $scope.end = false;
 				var playerstoremove = {};
 				for (var i in $scope.users) {
 					playerstoremove[$scope.users[i].id] = $scope.users[i].id;
@@ -166,6 +166,9 @@ angular.module("entropicsFest", [])
 			$scope.start = function() {
 				$scope.end = false;
 			};
+			$scope.toggleDetails = function() {
+				$scope.end = !$scope.end;
+			};
 			$scope.find = function(id){
 				var i = 0;
 				for(var x in $scope.users) {
@@ -175,6 +178,7 @@ angular.module("entropicsFest", [])
 				return null;
 			}
 			function rearrange(){
+				var imfirst = true;
 				$('.item').each(function(idx, el){
 					var $el = $(el);
 					var newTop = idx * $config.OFFSET_Y;
@@ -182,10 +186,21 @@ angular.module("entropicsFest", [])
 						$el.css({
 							'top': newTop
 						})
-						.one('webkitTransitionEnd', function (evt){
-							$(evt.target).removeClass('moving');
-						})
-						.addClass('moving');
+						if (imfirst) {
+							if ($el.hasClass('movingdown')) $el.removeClass('movingdown');
+							$el.one('webkitTransitionEnd', function (evt){
+								$(evt.target).removeClass('movingup');
+							})
+							.addClass('movingup');
+							imfirst = false;
+						} /*else {
+							if (!$el.hasClass('movingup')) {
+								$el.one('webkitTransitionEnd', function (evt){
+									$(evt.target).removeClass('movingdown');
+								})
+								.addClass('movingdown');
+							}
+						}*/
 					}
 
 				});
@@ -221,9 +236,11 @@ angular.module("entropicsFest", [])
 	    scope.$watch(attr.animateOnChange, function(nv,ov) {
 	      if (nv!=ov) {
 	        if(nv===true) element.addClass('slideInLeft');
+					else if (nv===false) return;
 	        else element.addClass('pulse');
 	        $timeout(function() {
 	          if(nv===true) element.removeClass('slideInLeft');
+						else if (nv===false) return;
 	          else element.removeClass('pulse');
 	        }, 1000); // Could be enhanced to take duration as a parameter
 	      }
