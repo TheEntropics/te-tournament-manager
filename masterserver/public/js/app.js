@@ -188,14 +188,14 @@ angular.module("entropicsFest", [])
 						})
 						if (imfirst) {
 							if ($el.hasClass('movingdown')) $el.removeClass('movingdown');
-							$el.one('webkitTransitionEnd', function (evt){
+							$el.one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (evt){
 								$(evt.target).removeClass('movingup');
 							})
 							.addClass('movingup');
 							imfirst = false;
 						} /*else {
 							if (!$el.hasClass('movingup')) {
-								$el.one('webkitTransitionEnd', function (evt){
+								$el.one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (evt){
 									$(evt.target).removeClass('movingdown');
 								})
 								.addClass('movingdown');
