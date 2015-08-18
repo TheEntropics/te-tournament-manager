@@ -1,7 +1,7 @@
 var express = require("express");
 var crypto = require("crypto");
 var fs = require('fs');
-var tail = require('./tail');
+var tail = require('./mytail');
 var sanitizer = require('sanitizer');
 
 var webApp = express();
