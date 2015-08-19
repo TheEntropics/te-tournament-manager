@@ -453,8 +453,11 @@ io.sockets.on("connection", function(socket) {
 	});
 
 	socket.on("deleteobject", function(data) {
-		console.log("deleteobject: "+data.id+" "+data.type);
-		if (data.type === "player") {
+		if (data.id === undefined || data.id.length === 0) return;
+
+		console.log("deleteobject: "+data.id);
+
+		if (data.id[0] === "P") {
 			if (Players[data.id] !== undefined) {
 				if (Players[data.id].image !== undefined) {
 					var filetodelete = Players[data.id].image+"";
@@ -471,11 +474,11 @@ io.sockets.on("connection", function(socket) {
 			Players[data.id] = undefined;
 			Database[data.id] = undefined;
 			removePartecipantFromEvent(data.id);
-		} else if (data.type === "team") {
+		} else if (data.id[0] === "T") {
 			Teams[data.id].removeAllPlayers();
 			Teams[data.id] = undefined;
 			removePartecipantFromEvent(data.id);
-		} else if (data.type === "event") {
+		} else if (data.id[0] === "E") {
 			Events[data.id].setEventServer(0);
 			Events[data.id] = undefined;
 		}

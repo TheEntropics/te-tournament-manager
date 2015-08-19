@@ -12,7 +12,7 @@
   <!-- Styles -->
   <link href="css/style_admin.css" rel="stylesheet">
 </head>
-<body>
+<body ng-app="adminPage">
 
   <nav class="navbar navbar-default">
     <div class="container">
@@ -26,27 +26,66 @@
     </div>
   </nav>
 
-  <div class="body-container">
+  <div class="body-container" ng-controller="MainController">
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-4">
           <h2>Players</h2>
           <div id="players-list" class="list-group" style="height: 500px; overflow: auto;">
+
+            <a class="list-group-item" ng-repeat="player in players">
+              <div class="container-fluid" style="padding-left: 0;">
+                <div class="row">
+                  <div id="button" style="cursor: text;" class="col-xs-10" ng-click="showCreatePlayerModal(player.id)">
+                    <h5 id="text" class="list-group-item-heading">{{ player.username }}</h5>
+                    <i id="description" class="list-group-item-text">{{ player.team !== undefined ? teams[player.team].name : "no team" }}</i>
+                  </div>
+                  <span class="pull-right"><button id="remove-button" class="btn btn-xs" ng-click="deleteObject(player.id)"><span class="glyphicon glyphicon-remove"></span></button></span>
+                </div>
+              </div>
+            </a>
+
           </div>
-          <p><a id="add-player" class="btn btn-default col-sm-12" role="button">Add player</a></p>
+          <p><a id="add-player" class="btn btn-default col-sm-12" role="button" ng-click="showCreatePlayerModal()">Add player</a></p>
         </div>
         <div class="col-md-4">
           <h2>Teams</h2>
           <div id="teams-list" class="list-group" style="height: 500px; overflow: auto;">
+
+            <a class="list-group-item" ng-repeat="team in teams">
+              <div class="container-fluid" style="padding-left: 0;">
+                <div class="row">
+                  <div id="button" style="cursor: text;" class="col-xs-10" ng-click="showCreateTeamModal(team.id)">
+                    <h5 id="text" class="list-group-item-heading">{{ team.name }}</h5>
+                    <i id="description" class="list-group-item-text">{{ team.players.length === 1 ? team.players.length + " player" : team.players.length + " players" }}</i>
+                  </div>
+                  <span class="pull-right"><button id="remove-button" class="btn btn-xs" ng-click="deleteObject(team.id)"><span class="glyphicon glyphicon-remove"></span></button></span>
+                </div>
+              </div>
+            </a>
+
           </div>
-          <p><a id="add-team" class="btn btn-default col-sm-12" role="button">Add team</a></p>
+          <p><a id="add-team" class="btn btn-default col-sm-12" role="button" ng-click="showCreateTeamModal()">Add team</a></p>
         </div>
         <div class="col-md-4">
           <h2>Events</h2>
           <div id="events-list" class="list-group" style="height: 500px; overflow: auto;">
+
+            <a class="list-group-item" ng-repeat="event in events">
+              <div class="container-fluid" style="padding-left: 0;">
+                <div class="row">
+                  <div id="button" style="cursor: text;" class="col-xs-10" ng-click="showCreateEventModal(event.id)">
+                    <h5 id="text" class="list-group-item-heading">{{ event.name }}</h5>
+                    <i id="description" class="list-group-item-text">{{ event.partecipants.length === 1 ? event.partecipants.length + " partecipant" : event.partecipants.length + " partecipants" }}</i>
+                  </div>
+                  <span class="pull-right"><button id="remove-button" class="btn btn-xs" ng-click="deleteObject(event.id)"><span class="glyphicon glyphicon-remove"></span></button></span>
+                </div>
+              </div>
+            </a>
+
           </div>
-          <p><a id="add-event" class="btn btn-default col-sm-12" role="button">Add event</a></p>
+          <p><a id="add-event" class="btn btn-default col-sm-12" role="button" ng-click="showCreateEventModal()">Add event</a></p>
         </div>
       </div>
     </div>
@@ -224,15 +263,18 @@
   </div>
 
   <!-- jQuery -->
-  <script src="js/jquery-1.11.2.min.js"></script>
+  <script src="/js/jquery-1.11.2.min.js"></script>
   <!-- Bootstrap -->
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/bootstrap-colorpicker.min.js"></script>
-  <script src="js/number-spinner.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap-colorpicker.min.js"></script>
+  <script src="/js/number-spinner.js"></script>
+  <script src="/js/angular.min.js"></script>
+  <script src="/js/lodash.min.js"></script>
   <!-- Custom -->
-  <script src="js/json2.js"></script>
+  <script src="/js/json2.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/delivery.js"></script>
-  <script src="js/masterserver.client.js"></script>
+  <script src="/js/admin_app.js"></script>
+
 </body>
 </html>
