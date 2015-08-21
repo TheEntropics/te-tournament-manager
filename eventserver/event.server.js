@@ -1,7 +1,7 @@
 var express = require("express");
 var crypto = require("crypto");
 var fs = require('fs');
-var tail = require('./mytail');
+var tail = require('./lib/mytail');
 var sanitizer = require('sanitizer');
 
 var webApp = express();
@@ -12,7 +12,7 @@ webIO.set('origins', '*:8080');
 // SETUP
 console.log("TheEntropics Event Server v0.0.1");
 
-var config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+var config = JSON.parse(fs.readFileSync('configs/config.json', 'utf8'));
 var gameconfig = JSON.parse(fs.readFileSync(config.gameconfig, 'utf8'));
 
 console.log();
@@ -210,16 +210,36 @@ function resetData() {
 	Players = {};
 }
 
+function toTimestamp(time) {
+	var n = time.split(":");
+	var timestamp = undefined;
+	for (var i = n.length - 1; i >= 0; i--) {
+		if (timestamp === undefined) timestamp = 0;
+		timestamp += n[i] * Math.pow(60, n.length - 1 - i);
+	}
+	return timestamp;
+}
+
 // LOG FILE
 logfile.on("line", function(line) {
 
 	var message = "";
 	var changesmade = false;
+	var timestamp;
+
+	// GET EVENT TIME
+	var regexstr = gameconfig.time_regex;
+	var match = line.match(new RegExp(regexstr, ""));
+	if (match != null) {
+		match = match[1];
+		timestamp = toTimestamp(match);
+	}
+
 	// KILL EVENT
-	var regexstr = gameconfig.event_regex;
+	regexstr = gameconfig.event_regex;
 	if (gameconfig.kill_event_regex !== undefined) regexstr = gameconfig.kill_event_regex;
 
-	var match = line.match(new RegExp(regexstr, ""));
+	match = line.match(new RegExp(regexstr, ""));
 	if (match != null) {
 		match = match[1];
 		if (match === gameconfig.kill_event_match) {

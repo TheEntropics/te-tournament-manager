@@ -1,0 +1,43 @@
+{
+	"gamename" : "UrbanTerror 4.2",
+	"event_regex" : "^[ ]*[\\d]+:[\\d]{2} ([a-zA-Z]+)",
+
+	"time_regex" : "^[ ]*([\\d]+:[\\d]{2}) ",
+
+	"kill_event_match" : "Kill",
+	"hit_event_match" : "Hit",
+	"headshot_event_match" : "1",
+	"userjoin_event_match" : "ClientUserinfoChanged",
+	"userleave_event_match" : "ClientDisconnect",
+	"roundstart_event_match" : "InitGame",
+	"roundend_event_match" : "ShutdownGame",
+
+	"kill_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) [\\d]+ [\\d]+: .+ killed .+ by",
+	"kill_event_towhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ ([\\d]+) [\\d]+: .+ killed .+ by",
+	"kill_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+: (.+) killed .+ by",
+	"kill_event_towho_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+: .+ killed (.+) by",
+	"kill_event_weapon_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+: .+ killed .+ by (.+)",
+
+	"kill_event_suicide_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) \\1 [\\d]+: .+ killed .+ by",
+	"kill_event_kamikaze_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) \\1 [\\d]+: .+ killed .+ by UT_MOD_SPLODED",
+
+	"kamikaze_event_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) \\1 [\\d]+: .+ killed .+ by UT_MOD_SPLODED",
+	"kamikaze_event_match" : "",
+	"kamikaze_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) \\1 [\\d]+: .+ killed .+ by UT_MOD_SPLODED",
+
+	"knife_event_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+: .+ killed .+ by (UT_MOD_KNIFE)",
+	"knife_event_match" : "UT_MOD_KNIFE",
+	"knife_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: ([\\d]+) [\\d]+ [\\d]+: .+ killed .+ by UT_MOD_KNIFE",
+	"knife_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+: (.+) killed .+ by UT_MOD_KNIFE",
+
+	"headshot_event_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ (1) [\\d]+: .+ hit",
+	"hit_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ [\\d]+ [\\d]+ [\\d]+: (.+) hit",
+	"hit_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} [a-zA-Z]+: [\\d]+ ([\\d]+) [\\d]+ [\\d]+: .+ hit",
+
+	"userjoin_event_regex" : "^[ ]*[\\d]+:[\\d]{2} (ClientUserinfoChanged)",
+	"userjoin_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} .+: [\\d]+ n\\\\(.+)\\\\t\\\\[\\d]+\\\\",
+	"userjoin_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} .+: ([\\d]+) ",
+
+	"userleave_event_regex" : "^[ ]*[\\d]+:[\\d]{2} (ClientDisconnect)",
+	"userleave_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} .+: ([\\d]+)"
+}

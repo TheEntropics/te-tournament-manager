@@ -1,0 +1,44 @@
+{
+	"gamename" : "",
+	"event_regex" : "",
+
+	"time_regex" : "",
+
+	"kill_event_match" : "",
+	"hit_event_match" : "",
+	"headshot_event_match" : "",
+	"userjoin_event_match" : "",
+	"userleave_event_match" : "",
+	"roundstart_event_match" : "",
+	"roundend_event_match" : "",
+
+	"kill_event_regex" : "",
+	"kill_event_towhoid_regex" : "",
+	"kill_event_bywhoid_regex" : "",
+	"kill_event_towho_regex" : "",
+	"kill_event_bywho_regex" : "",
+	"kill_event_weapon_regex" : "",
+
+	"kill_event_suicide_regex" : "",
+	"kill_event_kamikaze_regex" : "",
+
+	"kamikaze_event_regex" : "",
+	"kamikaze_event_match" : "",
+	"kamikaze_event_id_regex" : "",
+
+	"knife_event_regex" : "",
+	"knife_event_match" : "",
+	"knife_event_id_regex" : "",
+	"knife_event_name_regex" : "",
+
+	"headshot_event_regex" : "",
+	"hit_event_bywho_regex" : "",
+	"hit_event_bywhoid_regex" : "",
+
+	"userjoin_event_regex" : "",
+	"userjoin_event_name_regex" : "",
+	"userjoin_event_id_regex" : "",
+
+	"userleave_event_regex" : "",
+	"userleave_event_id_regex" : ""
+}
