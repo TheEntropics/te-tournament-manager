@@ -295,6 +295,7 @@ angular.module("adminPage", [])
 
       $scope.setData = function(event, teams, players, servers) {
         $scope.event.name = (event !== undefined ? event.name : "");
+        $scope.event.id = (event !== undefined ? event.id : undefined);
         $scope.event.rounds = (event !== undefined ? event.rounds : "1");
         $scope.event.warmupround = (event !== undefined ? event.warmupround : false);
         $scope.event.partecipants = (event !== undefined ? event.partecipants.slice() : []);
