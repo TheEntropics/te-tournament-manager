@@ -432,7 +432,7 @@ io.sockets.on("connection", function(socket) {
 				// Update Event
 				Events[data.id].name = data.name || Events[data.id].name;
 				Events[data.id].rounds = data.rounds || Events[data.id].rounds;
-				Events[data.id].warmupround = data.warmupround || Events[data.id].warmupround;
+				Events[data.id].warmupround = data.warmupround !== undefined ? data.warmupround : Events[data.id].warmupround;
 				if (data.partecipants !== undefined) {
 					Events[data.id].setPartecipants(data.partecipants);
 					//console.log("partecipants of "+data.id, data.partecipants)

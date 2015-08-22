@@ -8,6 +8,8 @@ function setPreview(input, imageview) {
   }
 }
 
+var API = {};
+
 angular.module("adminPage", [])
 
 	.factory('socket', function ($rootScope) {
@@ -98,155 +100,54 @@ angular.module("adminPage", [])
 		  });
 
 			$scope.showCreatePlayerModal = function(id) {
+        playerModal.find("#player-image-form")[0].reset();
 
-			  var teamsListModal = playerModal.find("#create-player-modal-teams-list");
-			  if (id === undefined) {
+		    playerModal.find("#save-player").off("click");
+		    playerModal.find("#save-player").on("click", function() {
+		      playerModal.modal('hide');
+		      var username = API.getCreatePlayerModalData().username;
+		      var teamid = API.getCreatePlayerModalData().teamid;
+		      var filename = playerModal.find("#player-image-input")[0].files[0];
+		      var nicknames = API.getCreatePlayerModalData().nicknames.split("\n");
+		      for (var k = 0; k < nicknames.length; k++) {
+		        if (nicknames[k] === "") {
+		          nicknames.splice(k, 1);
+		        }
+		      }
+		      //console.log("save player: "+id+" "+$scope.players[id].username+" as "+username+", new team "+teamid);
+		      //console.log(filename);
 
-			    playerModal.find("#username").val("");
-			    playerModal.find("#nicknames").val("");
-			    playerModal.find("#player-image-form")[0].reset();
-			    playerModal.find("#player-image").attr("src", "img/default_player.png");
-			    playerModal.find("#save-player").off("click");
-			    playerModal.find("#save-player").on("click", function() {
-			      playerModal.modal('hide');
-			      var username = playerModal.find("#username").val();
-			      var teamid = teamsListModal.children(".active").data("team-id");
-			      var nicknames = playerModal.find("#nicknames").val().split("\n");
-			      var filename = playerModal.find("#player-image-input")[0].files[0];
-			      playerModal.find("#username").val("");
+		      if (filename === undefined) {
+		        socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames});
+		      } else {
+		        deliveryCallback = function(fileUID) {
+		          console.log("file was successfully sent. [EditPlayer]");
+		          socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames, "image" : fileuid});
+		        };
+		        var fileuid = delivery.send(filename);
+		      }
+		    });
 
-			      console.log("create player: "+username+", new team "+teamid);
-			      console.log(filename);
-
-			      if (filename === undefined) {
-			        socket.emit("updateobject", {"type" : "player", "username" : username, "team" : teamid, "nicknames" : nicknames});
-			      } else {
-			        deliveryCallback = function(fileUID) {
-			          console.log("file was successfully sent. [AddPlayer]");
-			          socket.emit("updateobject", {"type" : "player", "username" : username, "team" : teamid, "nicknames" : nicknames, "image" : fileuid});
-			        };
-			        var fileuid = delivery.send(filename);
-			      }
-
-			    });
-
-			  } else {
-
-			    console.log("edit player: "+id+" "+$scope.players[id].username);
-
-			    playerModal.find("#username").val($scope.players[id].username);
-			    playerModal.find("#player-image-form")[0].reset();
-
-			    if ($scope.players[id].image !== undefined) {
-			      playerModal.find("#player-image").attr("src", "img/uploads/"+$scope.players[id].image);
-			    } else {
-			      playerModal.find("#player-image").attr("src", "img/uploads/default");
-			    }
-
-			    var nicknames = "";
-			    for (var k = 0; k < $scope.players[id].nicknames.length; k++) {
-			      if (k === $scope.players[id].nicknames.length - 1) {
-			        nicknames += $scope.players[id].nicknames[k];
-			      } else {
-			        nicknames += $scope.players[id].nicknames[k] + "\n";
-			      }
-			    }
-			    playerModal.find("#nicknames").val(nicknames);
-
-			    playerModal.find("#save-player").off("click");
-			    playerModal.find("#save-player").on("click", function() {
-			      playerModal.modal('hide');
-			      var username = playerModal.find("#username").val();
-			      var teamid = teamsListModal.children(".active").data("team-id");
-			      var filename = playerModal.find("#player-image-input")[0].files[0];
-			      var nicknames = playerModal.find("#nicknames").val().split("\n");
-			      for (var k = 0; k < nicknames.length; k++) {
-			        if (nicknames[k] === "") {
-			          nicknames.splice(k, 1);
-			        }
-			      }
-			      playerModal.find("#username").val("");
-			      console.log("save player: "+id+" "+$scope.players[id].username+" as "+username+", new team "+teamid);
-			      console.log(filename);
-
-			      if (filename === undefined) {
-			        socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames});
-			      } else {
-			        deliveryCallback = function(fileUID) {
-			          console.log("file was successfully sent. [EditPlayer]");
-			          socket.emit("updateobject", {"type" : "player", "id" : id, "username" : username, "team" : teamid, "nicknames" : nicknames, "image" : fileuid});
-			        };
-			        var fileuid = delivery.send(filename);
-			      }
-			    });
-			  }
-
-			  teamsListModal.html("");
-			  var item = $("<button type=\"button\" class=\"list-group-item\">No team</button>");
-			  teamsListModal.append(item);
-			  item.addClass("active");
-			  item.data("team-id", 0);
-			  item.on("click", function() {
-			    teamsListModal.children().removeClass("active");
-			    $(this).addClass("active");
-			  });
-
-			  for (var j in $scope.teams) {
-			    var item = $("<button type=\"button\" class=\"list-group-item\"></button>");
-			    item.html($scope.teams[j].name);
-			    var badge = $("<span class=\"badge\">Color</span>");
-			    badge.css("background-color", $scope.teams[j].color);
-			    item.append(badge);
-			    item.data("team-id", j);
-			    teamsListModal.append(item);
-			    item.on("click", function() {
-			      teamsListModal.children().removeClass("active");
-			      $(this).addClass("active");
-			    });
-			    if (id !== undefined && $scope.players[id].team === j) {
-			      teamsListModal.children().removeClass("active");
-			      item.addClass("active");
-			    }
-			  }
-
+        API.setCreatePlayerModalData($scope.players[id], $scope.teams);
 			  playerModal.modal('show');
 			}
 
 			$scope.showCreateTeamModal = function(id) {
 
-			  if (id === undefined) {
-			    teamModal.find("#teamname").val("");
-			    teamModal.find("#teamcolor").val("#ffffff");
+		    console.log("edit team : " + id);
 
-			    teamModal.find("#save-team").off("click");
-			    teamModal.find("#save-team").on("click", function() {
-			      teamModal.modal('hide');
-			      var teamname = teamModal.find("#teamname").val();
-			      var teamcolor = teamModal.find("#teamcolor").val();
+		    teamModal.find("#save-team").off("click");
+		    teamModal.find("#save-team").on("click", function() {
+		      teamModal.modal('hide');
+		      var teamname = API.getCreateTeamModalData().name;
+		      var teamcolor = API.getCreateTeamModalData().color;
 
-			      console.log("create team: "+teamname+", color "+teamcolor);
+		      console.log("create team: "+teamname+", color "+teamcolor);
 
-			      socket.emit("updateobject", {"type" : "team", "name" : teamname, "color" : teamcolor});
-			    });
+		      socket.emit("updateobject", {"type" : "team", "id" : id, "name" : teamname, "color" : teamcolor});
+		    });
 
-			  } else {
-			    console.log("edit team");
-
-			    teamModal.find("#teamname").val($scope.teams[id].name);
-			    teamModal.find("#teamcolor").val($scope.teams[id].color);
-
-			    teamModal.find("#save-team").off("click");
-			    teamModal.find("#save-team").on("click", function() {
-			      teamModal.modal('hide');
-			      var teamname = teamModal.find("#teamname").val();
-			      var teamcolor = teamModal.find("#teamcolor").val();
-
-			      console.log("create team: "+teamname+", color "+teamcolor);
-
-			      socket.emit("updateobject", {"type" : "team", "id" : id, "name" : teamname, "color" : teamcolor});
-			    });
-			  }
-
+        API.setCreateTeamModalData($scope.teams[id]);
 			  teamModal.modal('show');
 			}
 
@@ -256,147 +157,23 @@ angular.module("adminPage", [])
 			  var playersListModal = eventModal.find("#create-event-modal-players-list");
 			  var serversListModal = eventModal.find("#create-event-modal-servers-list");
 
-			  eventModal.find("#save-event").off("click");
+        console.log("edit event");
 
-			  if (id === undefined) {
+        eventModal.find("#save-event").off("click");
+        eventModal.find("#save-event").on("click", function() {
+          eventModal.modal('hide');
+          var eventname = API.getCreateEventModalData().name;
+          var eventserverid = API.getCreateEventModalData().eventserverid;
+          var partecipants = API.getCreateEventModalData().partecipants;
+          var rounds = API.getCreateEventModalData().rounds;
+          var warmupround = API.getCreateEventModalData().warmupround;
 
-			    eventModal.find("#eventname").val("");
-			    eventModal.find("#rankings").hide();
-			    eventModal.find("#rounds").val("1");
-			    eventModal.find("#warmupround").attr("checked", false);
+          console.log("create event: "+eventname);
 
-			    eventModal.find("#save-event").on("click", function() {
-			      eventModal.modal('hide');
-			      var eventname = eventModal.find("#eventname").val();
-			      var eventserverid = serversListModal.children(".active").data("server-id");
-			      var teamsSelected = teamsListModal.find(".active");
-			      var playersSelected = playersListModal.find(".active");
-			      var rounds = eventModal.find("#rounds").val();
-			      var warmupround = eventModal.find("#warmupround").is(':checked');
+          socket.emit("updateobject", {"type" : "event", "id" : id, "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid, "rounds" : rounds, "warmupround" : warmupround});
+        });
 
-			      var partecipants = [];
-			      teamsSelected.each(function() {
-			        partecipants.push($(this).data("team-id"));
-			      });
-			      playersSelected.each(function() {
-			        partecipants.push($(this).data("player-id"));
-			      });
-
-			      console.log("create event: "+eventname);
-
-			      socket.emit("updateobject", {"type" : "event", "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid, "rounds" : rounds, "warmupround" : warmupround});
-			    });
-
-			  } else {
-
-			    console.log("edit event");
-
-			    eventModal.find("#eventname").val($scope.events[id].name);
-			    eventModal.find("#rounds").val($scope.events[id].rounds);
-			    eventModal.find("#warmupround").attr("checked", $scope.events[id].warmupround);
-			    eventModal.find("#rankings").show();
-			    eventModal.find("#show-rankings").attr("href", "/"+id);
-
-			    eventModal.find("#save-event").off("click");
-			    eventModal.find("#save-event").on("click", function() {
-			      eventModal.modal('hide');
-			      var eventname = eventModal.find("#eventname").val();
-			      var eventserverid = serversListModal.children(".active").data("server-id");
-			      var teamsSelected = teamsListModal.find(".active");
-			      var playersSelected = playersListModal.find(".active");
-			      var rounds = eventModal.find("#rounds").val();
-			      var warmupround = eventModal.find("#warmupround").is(':checked');
-
-			      var partecipants = [];
-			      teamsSelected.each(function() {
-			        partecipants.push($(this).data("team-id"));
-			      });
-			      playersSelected.each(function() {
-			        partecipants.push($(this).data("player-id"));
-			      });
-
-			      console.log("create event: "+eventname);
-
-			      socket.emit("updateobject", {"type" : "event", "id" : id, "name" : eventname, "partecipants" : partecipants, "eventserverid" : eventserverid, "rounds" : rounds});
-			    });
-			  }
-
-			  var tempids = {};
-			  if (id !== undefined) {
-			    for (var n in $scope.events[id].partecipants) {
-			      tempids[$scope.events[id].partecipants[n]] = $scope.events[id].partecipants[n];
-			    }
-			  }
-			  // Show teams
-			  var cont = 0;
-			  teamsListModal.html("");
-			  for (var j in $scope.teams) {
-			    cont++;
-			    var item = $("<button type=\"button\" class=\"list-group-item\"></button>");
-			    item.html($scope.teams[j].name);
-			    var badge = $("<span class=\"badge\">Color</span>");
-			    badge.css("background-color", $scope.teams[j].color);
-			    item.append(badge);
-			    item.data("team-id", j);
-			    teamsListModal.append(item);
-			    item.on("click", function() {
-			      $(this).toggleClass("active");
-			    });
-			    if (tempids[j] !== undefined) {
-			      item.addClass("active");
-			    }
-			  }
-			  if (cont === 0) {
-			    teamsListModal.html("<h6>No teams</h6>");
-			  }
-
-			  // Show players
-			  playersListModal.html("");
-			  cont = 0;
-			  for (var j in $scope.players) {
-			    cont++;
-			    var item = $("<button type=\"button\" class=\"list-group-item\"></button>");
-			    item.html($scope.players[j].username);
-			    item.data("player-id", j);
-			    playersListModal.append(item);
-			    item.on("click", function() {
-			      $(this).toggleClass("active");
-			    });
-			    if (tempids[j] !== undefined) {
-			      item.addClass("active");
-			    }
-			  }
-			  if (cont === 0) {
-			    playersListModal.html("<h6>No players</h6>");
-			  }
-
-			  // Show servers
-			  serversListModal.html("");
-
-			  var item = $("<button type=\"button\" class=\"list-group-item\">No server</button>");
-			  serversListModal.append(item);
-			  item.addClass("active");
-			  item.data("server-id", 0);
-			  item.on("click", function() {
-			    serversListModal.children().removeClass("active");
-			    $(this).addClass("active");
-			  });
-
-			  for (var j in $scope.servers) {
-			    item = $("<button type=\"button\" class=\"list-group-item\"></button>");
-			    item.html($scope.servers[j].eventserverid);
-			    item.data("server-id", j);
-			    serversListModal.append(item);
-			    item.on("click", function() {
-			      serversListModal.children().removeClass("active");
-			      $(this).addClass("active");
-			    });
-			    if (id !== undefined && $scope.events[id].eventserverid === j) {
-			      serversListModal.children().removeClass("active");
-			      item.addClass("active");
-			    }
-			  }
-
+        API.setCreateEventModalData($scope.events[id], $scope.teams, $scope.players, $scope.servers);
 			  eventModal.modal('show');
 			}
 
@@ -411,6 +188,160 @@ angular.module("adminPage", [])
 		    $scope.events = data.events;
 		    $scope.servers = data.eventservers;
 			});
+		}
+	])
 
+  .controller('CreateUserModalController', [
+		'$scope',
+		'$rootScope',
+		'$window',
+		'socket',
+
+		function ($scope, $root, $window, socket) {
+
+			$scope.player = {"name" : "", "image" : "", "nicknames" : []};
+      $scope.nicknames = "";
+      $scope.teams = [
+        {
+          "name" : "No team",
+          "id" : "0"
+        }
+      ];
+      $scope.selectedTeam = "0";
+
+      $scope.select = function($event) {
+        $scope.selectedTeam = $($event.currentTarget).data("team-id");
+      }
+
+      $scope.setData = function(player, teams) {
+        $scope.player.username = (player !== undefined ? player.username+"" : "");
+        $scope.player.image = (player !== undefined ? player.image+"" : "");
+        $scope.player.nicknames = (player !== undefined ? player.nicknames.slice() : []);
+
+        $scope.selectedTeam = (player !== undefined ? player.team+"" : "0");
+        $scope.teams = [
+          {
+            "name" : "No team",
+            "id" : "0"
+          }
+        ];
+
+        for (var team in teams) {
+          $scope.teams.push(teams[team]);
+        }
+
+        $scope.nicknames = "";
+
+        for (var i = 0; i < $scope.player.nicknames.length; i++) {
+          if (i === $scope.player.nicknames.length - 1) {
+            $scope.nicknames += $scope.player.nicknames[i];
+          } else {
+            $scope.nicknames += $scope.player.nicknames[i] + "\n";
+          }
+        }
+      }
+
+      $scope.getData = function() {
+        return {"username" : $scope.player.username+"", "nicknames" : $scope.nicknames+"", "teamid" : $scope.selectedTeam+""};
+      }
+
+      API.setCreatePlayerModalData = $scope.setData;
+      API.getCreatePlayerModalData = $scope.getData;
+		}
+	])
+
+  .controller('CreateTeamModalController', [
+		'$scope',
+		'$rootScope',
+		'$window',
+		'socket',
+
+		function ($scope, $root, $window, socket) {
+
+      function getColor() {
+        return ('#' + Math.floor(Math.random()*16777216).toString(16) );
+      }
+
+			$scope.team = { "name": "", "color" : getColor() };
+
+      $scope.setData = function(team) {
+        $scope.team.name = (team !== undefined ? team.name+"" : "");
+        $scope.team.color = (team !== undefined ? team.color+"" : getColor());
+      }
+
+      $scope.getData = function() {
+        return { "name": $scope.team.name, "color" : $scope.team.color };
+      }
+
+      API.setCreateTeamModalData = $scope.setData;
+      API.getCreateTeamModalData = $scope.getData;
+		}
+	])
+
+  .controller('CreateEventModalController', [
+		'$scope',
+		'$rootScope',
+		'$window',
+		'socket',
+
+		function ($scope, $root, $window, socket) {
+
+			$scope.event = {"name" : "", "rounds" : "1", "warmupround" : false, "partecipants" : [], "eventserverid" : "0"};
+      $scope.teams = [];
+      $scope.players = [];
+      $scope.servers = [];
+
+      $scope.partecipants = [];
+
+      $scope.setData = function(event, teams, players, servers) {
+        $scope.event.name = (event !== undefined ? event.name : "");
+        $scope.event.rounds = (event !== undefined ? event.rounds : "1");
+        $scope.event.warmupround = (event !== undefined ? event.warmupround : false);
+        $scope.event.partecipants = (event !== undefined ? event.partecipants.slice() : []);
+        $scope.event.eventserverid = (event !== undefined ? event.eventserverid : "0");
+        $scope.partecipants = (event !== undefined ? event.partecipants.slice() : []);
+
+        $scope.teams = [];
+        $scope.players = [];
+        $scope.servers = [
+          {"eventserverid" : "0"}
+        ];
+
+        for (var team in teams) {
+          $scope.teams.push(teams[team]);
+        }
+        for (var player in players) {
+          $scope.players.push(players[player]);
+        }
+        for (var server in servers) {
+          $scope.servers.push(servers[server]);
+        }
+      }
+
+      $scope.select = function($event) {
+        $scope.event.eventserverid = $($event.currentTarget).data("eventserver-id");
+      }
+
+      $scope.toggle = function($event) {
+        var id = $($event.currentTarget).data("object-id");
+        var pos = $scope.partecipants.indexOf(id);
+        if (pos !== -1) {
+            $scope.partecipants.splice(pos, 1);
+        } else {
+          $scope.partecipants.push(id);
+        }
+       }
+
+       $scope.isSelected = function(id) {
+         var pos = $scope.partecipants.indexOf(id);
+         return (pos !== -1);
+       }
+
+       $scope.getData = function() {
+         return {"name" : $scope.event.name, "rounds" : $scope.event.rounds, "warmupround" : $scope.event.warmupround, "partecipants" : $scope.partecipants, "eventserverid" : $scope.event.eventserverid};
+       }
+
+      API.setCreateEventModalData = $scope.setData;
+      API.getCreateEventModalData = $scope.getData;
 		}
 	]);

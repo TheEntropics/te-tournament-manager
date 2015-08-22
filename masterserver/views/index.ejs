@@ -93,7 +93,7 @@
   </div>
 
   <!-- Player Modal -->
-  <div class="modal fade" id="create-player-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal fade" id="create-player-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ng-controller="CreateUserModalController">
     <div class="modal-dialog" role="document" >
       <div class="modal-content">
         <div class="modal-header">
@@ -106,7 +106,7 @@
               <div class="media-left">
                 <div class="image-upload" style="width: 80px; height: 80px;">
                   <label for="player-image-input">
-                    <img id="player-image" class="media-object" src="/img/default_player.png"  style="width: 80px; height: auto;" alt="player image">
+                    <img id="player-image" class="media-object" ng-src="/img/uploads/{{ player.image }}"  style="width: 80px; height: auto;" alt="player image">
                   </label>
                   <form id="player-image-form" style="display: none;">
                     <input id="player-image-input" accept="image/*" type="file"/>
@@ -116,17 +116,18 @@
               <div class="media-body">
                 <form>
                   <div class="form-group">
-                    <input type="text" class="form-control" placeholder="username" id="username"></input>
+                    <input type="text" class="form-control" placeholder="username" id="username" ng-value="player.username" required ng-model="player.username"></input>
                   </div>
                 </form>
               </div>
             </div>
           <h5>Nicknames</h5>
-          <textarea style="resize: vertical;" class="form-control" rows="2" id="nicknames" placeholder="different nicknames this player will use"></textarea>
+          <textarea style="resize: vertical;" class="form-control" rows="2" id="nicknames" placeholder="different nicknames this player will use" required ng-model="nicknames">{{ nicknames }}</textarea>
           <br/>
           <h5>Teams</h5>
           <div id="create-player-modal-teams-list" class="list-group" style="max-height: 250px; overflow: auto;">
-            <button type="button" data-team="0" class="list-group-item">No team <span class="badge">Color</span></button>
+            <button ng-repeat="team in teams" type="button" class="list-group-item {{ team.id == selectedTeam ? 'active' : '' }}" data-team-id="{{ team.id }}" ng-click="select($event)">{{ team.name }}<span class="badge" style="background-color: {{
+            team.color }}" ng-hide="{{ team.color === undefined }}">Color</span></button>
           </div>
         </div>
         <div class="modal-footer">
@@ -138,7 +139,7 @@
   </div>
 
   <!-- Team Modal -->
-  <div class="modal fade" id="create-team-modal" tabindex="-1" role="dialog" aria-labelledby="teamModalLabel">
+  <div class="modal fade" id="create-team-modal" tabindex="-1" role="dialog" aria-labelledby="teamModalLabel" ng-controller="CreateTeamModalController">
     <div class="modal-dialog" role="document" >
       <div class="modal-content">
         <div class="modal-header">
@@ -149,12 +150,12 @@
           <form>
             <h5>Name</h5>
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="team name" id="teamname"></input>
+              <input type="text" class="form-control" placeholder="team name" id="teamname" ng-value="team.name" required ng-model="team.name"></input>
             </div>
           </form>
           <h5>Color</h5>
           <div class="input-group colorpickerinput">
-            <input id="teamcolor" type="text" value="#ffffff" class="form-control"></input>
+            <input id="teamcolor" type="text" class="form-control" ng-value="team.color" required ng-model="team.color"></input>
             <span class="input-group-addon"><i></i></span>
           </div>
         </div>
@@ -167,7 +168,7 @@
   </div>
 
   <!-- Event Modal -->
-  <div class="modal fade" id="create-event-modal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel">
+  <div class="modal fade" id="create-event-modal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" ng-controller="CreateEventModalController">
     <div class="modal-dialog" role="document" >
       <div class="modal-content">
         <div class="modal-header">
@@ -178,7 +179,7 @@
           <form>
             <h5>Name</h5>
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="event name" id="eventname"></input>
+              <input type="text" class="form-control" placeholder="event name" id="eventname" ng-value="event.name" ng-model="event.name"></input>
             </div>
           </form>
           <h5>Partecipants</h5>
@@ -189,22 +190,26 @@
           <div class="tab-content">
             <div id="teams" class="tab-pane fade in active">
               <div id="create-event-modal-teams-list" class="list-group" style="max-height: 250px; overflow: auto;">
-                <button type="button" data-team="0" class="list-group-item">No teams</button>
+                <h6 ng-show="(teams.length === 0)">No teams</h6>
+                <button ng-repeat="team in teams" type="button" class="list-group-item {{ isSelected(team.id) ? 'active' : '' }}" data-object-id="{{ team.id }}" ng-click="toggle($event)">{{ team.name }}<span class="badge" style="background-color: {{
+                team.color }}" ng-hide="{{ team.color === undefined }}">Color</span></button>
+
               </div>
             </div>
             <div id="players" class="tab-pane fade">
               <div id="create-event-modal-players-list" class="list-group" style="max-height: 250px; overflow: auto;">
-                <button type="button" data-team="0" class="list-group-item">No players</button>
+                <h6 ng-show="(players.length === 0)">No players</h6>
+                <button ng-repeat="player in players" type="button" class="list-group-item {{ isSelected(player.id) ? 'active' : '' }}" data-object-id="{{ player.id }}" ng-click="toggle($event)">{{ player.username }}</button>
               </div>
             </div>
           </div>
-          <div id="rankings" style="display: none;">
+          <div id="rankings" ng-show="(event.id !== undefined)">
             <h5>Rankings</h5>
-            <a id="show-rankings" href="" target="_blank" class="">Show rankings</a>
+            <a id="show-rankings" href="{{ '/'+event.id }}" target="_blank" class="">Show rankings</a>
           </div>
           <h5>Rounds</h5>
-          <div class="input-group spinner" data-min="1" data-max="10">
-            <input id="rounds" type="text" class="form-control" value="1">
+          <div class="input-group spinner" data-min="1">
+            <input id="rounds" type="text" class="form-control" ng-value="event.rounds" ng-model="event.rounds">
             <span class="input-group-btn">
               <button class="btn btn-default" type="button">
                 <span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>
@@ -215,12 +220,12 @@
             </span>
           </div>
           <div class="checkbox">
-            <input type="checkbox" id="warmupround" class="styled">
+            <input type="checkbox" id="warmupround" class="styled" ng-model="event.warmupround">
             <label for="checkbox1">Warmup round</label>
           </div>
           <h5>Event servers</h5>
           <div id="create-event-modal-servers-list" class="list-group" style="max-height: 150px; overflow: auto;">
-            <button type="button" data-team="0" class="list-group-item">No servers</button>
+            <button ng-repeat="server in servers" type="button" class="list-group-item {{ server.eventserverid == event.eventserverid ? 'active' : '' }}" data-eventserver-id="{{ server.eventserverid }}" ng-click="select($event)">{{ server.eventserverid !== "0" ? server.eventserverid : "No server" }}</button>
           </div>
         </div>
         <div class="modal-footer">
