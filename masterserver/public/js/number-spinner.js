@@ -12,7 +12,7 @@
     if (max !== undefined) {
       value = value > max ? max : value;
     }
-    input.val(value);
+    input.val(value).trigger('input');
   });
   $('.spinner .btn:last-of-type').on('click', function() {
     var spinner = $(this).parents(".spinner");
@@ -27,6 +27,6 @@
     if (max !== undefined) {
       value = value > max ? max : value;
     }
-    input.val(value);
+    input.val(value).trigger('input');
   });
 })(jQuery);

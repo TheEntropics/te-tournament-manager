@@ -766,7 +766,7 @@
       updateInput: function(val) {
         val = val || this.color.toString(this.format);
         if (this.input !== false) {
-          this.input.prop('value', val);
+          this.input.prop('value', val).trigger('input');
         }
         return val;
       },
