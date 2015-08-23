@@ -214,8 +214,9 @@ angular.module("adminPage", [])
       }
 
       $scope.setData = function(player, teams) {
+        $scope.player.image = " ";
         $scope.player.username = (player !== undefined ? player.username+"" : "");
-        $scope.player.image = (player !== undefined ? player.image+"" : "");
+        $scope.player.image = (player !== undefined ? player.image+"" : "default");
         $scope.player.nicknames = (player !== undefined ? player.nicknames.slice() : []);
 
         $scope.selectedTeam = (player !== undefined ? player.team+"" : "0");

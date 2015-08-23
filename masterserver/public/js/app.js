@@ -91,7 +91,7 @@ angular.module("entropicsFest", [])
 
 			function calculatePoints(data) {
 				var points = (data.kills*10)+(data.headshots*5)+(data.knives*4)+(data.kamikaze*5);
-				var killsdeathsratio = data.deaths !== 0 ? data.kills / data.deaths : 0;
+				var killsdeathsratio = data.deaths !== 0 ? 1 - (data.kills / data.deaths) : 0;
 				points -= Math.floor(killsdeathsratio * 5);
 
 				return points;
