@@ -20,8 +20,8 @@ var Tail = function (path) {
     if (fNameStatChanged.size > currDataLength) {
       fs.open(path, 'r', function(err, fd) {
         if (err) {
-          console.error("Can't open file. Skipping iteration.");
-          //process.exit();
+          console.log("Can't open file. Skipping iteration.");
+          console.error(err);
           return;
         };
         var newDataLength = fNameStatChanged.size - readDataLength;
@@ -29,7 +29,7 @@ var Tail = function (path) {
         fs.read(fd, buffer, 0, newDataLength, readDataLength, function (err, bytesRead, newData) {
           if (err) {
             console.error("Error reading file. Skipping iteration.");
-            //process.exit();
+            console.error(err);
             return;
           };
           var usedLinesLength = 0;
@@ -41,7 +41,9 @@ var Tail = function (path) {
           });
           currDataLength = fNameStatChanged.size;
           readDataLength += usedLinesLength;
+          fs.close(fd);
         });
+        fs.close(fd);
       });
     }
   }, 500);

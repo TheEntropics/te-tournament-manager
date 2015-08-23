@@ -50,6 +50,7 @@
 										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Headshots</th>
 										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Kamikaze</th>
 										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Knives</th>
+										<th ng-show='end' animate-on-change="end" class="animated text-center" width="100px">Streak</th>
 										<th ng-show='end' animate-on-change="end" class="animated text-center" width="50px">Ratio</th>
 										<th class="text-center" width="100px">Deaths</th>
 										<th class="text-center" width="100px">Kills</th>
@@ -62,6 +63,7 @@
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.headshots : 0 }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.kamikaze : 0 }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.knives : 0 }}</td>
+											<td ng-show='end' animate-on-change="end" class="animated text-center" width="100px">{{ user.data ? user.data.killstreak : 0 }}</td>
 							    		<td ng-show='end' animate-on-change="end" class="animated text-center" width="50px">{{ (user.data ? user.data.kills : 0)/(user.data ? user.data.deaths : 0) | number:2 }}</td>
 							    		<td class="text-center" width="100px">{{ user.data ? user.data.deaths : 0 }}</td>
 							    		<td class="text-center" width="100px">{{ user.data ? user.data.kills : 0 }}</td>

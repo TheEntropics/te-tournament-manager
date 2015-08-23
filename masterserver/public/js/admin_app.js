@@ -13,7 +13,7 @@ var API = {};
 angular.module("adminPage", [])
 
 	.factory('socket', function ($rootScope) {
-	  var socket = io.connect(document.location.href);
+	  var socket = io.connect(document.location.href.split("/")[2]);
 	  return {
 	    on: function (eventName, callback) {
 	      socket.on(eventName, function () {

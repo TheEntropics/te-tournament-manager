@@ -92,7 +92,7 @@ angular.module("entropicsFest", [])
 			function calculatePoints(data) {
 				var points = (data.kills*10)+(data.headshots*5)+(data.knives*4)+(data.kamikaze*5);
 				var killsdeathsratio = data.deaths !== 0 ? data.kills / data.deaths : 0;
-				points -= Math.round(killsdeathsratio * 7);
+				points -= Math.floor(killsdeathsratio * 5);
 
 				return points;
 			}
@@ -116,6 +116,7 @@ angular.module("entropicsFest", [])
 						player.data.knives = _.sum(a, "knives");
 						player.data.kamikaze = _.sum(a, "kamikaze");
 						player.data.deaths = _.sum(a, "deaths");
+						player.data.killstreak = data.players[playerid].killstreak > player.data.killstreak ? data.players[playerid].killstreak : player.data.killstreak;
 						player.points = calculatePoints(player.data);
 						$window.clearTimeout($scope.timer);
 						$scope.timer = $window.setTimeout(rearrange, 100);
