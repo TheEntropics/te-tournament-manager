@@ -1,0 +1,13 @@
+{
+	"masterserver" : "localhost",
+	"masterserverport" : "3000",
+	"eventservername" : "EventServer",
+	"eventid" : "0",
+	"logfile_csgo" : "/cygdrive/g/csgo_server/csgo_dedicated_server/csgo/console.log",
+	"logfile_urt" : "/cygdrive/g/UrbanTerror42/q3ut4/games.log",
+	"logfile" : "C:/Games/UrbanTerror42/q3ut4/games.log",
+	"logfile_cod4" : "/cygdrive/e/Program Files (x86)/Activision/Call of Duty 4 - Modern Warfare/main/games_mp.log",
+	"logfile_cod2" : "/cygdrive/g/Call of Duty 2/main/games_mp.log",
+	"gameconfig" : "configs/urbanterror.json",
+	"gameconfig_cod2" : "configs/cod2.json"
+}
