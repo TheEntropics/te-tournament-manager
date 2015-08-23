@@ -87,6 +87,8 @@ angular.module("entropicsFest", [])
 						$scope.users.splice(index, 1);
 					}
 				}
+
+				resetScrollAnimation();
 			});
 
 			function calculatePoints(data) {
@@ -207,7 +209,28 @@ angular.module("entropicsFest", [])
 				});
 			}
 
+			var animator;
+			function resetScrollAnimation() {
+
+				if (animator !== undefined) {
+					clearInterval(animator);
+				}
+
+				var animationDurationPerItem = 0.5; // Seconds
+				var animationDuration = $scope.users.length * animationDurationPerItem; // Seconds
+
+				animator = setInterval(function() {
+
+					$(".mainview").animate({ scrollTop: ($(".mainview")[0].scrollHeight - $(".mainview").height()) }, (animationDuration*1000));
+					setTimeout(function() {
+						$('.mainview').animate({scrollTop:0}, (animationDuration*1000));
+					}, animationDuration*1000 + 3000);
+
+				}, animationDuration*1000*2 + 8000);
+			}
+
 		}
+
 	])
 
 	.controller('jdController', [
