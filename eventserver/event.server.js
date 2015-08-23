@@ -186,6 +186,10 @@ function Player(id, username) {
 		that.killstreak = 0;
 		that.datachanged = true;
 	};
+	this.resetKillstreak = function() {
+		that.killstreak = 0;
+		that.datachanged = true;
+	};
 };
 
 var References = {};
@@ -208,6 +212,13 @@ function checkPlayers() {
 }
 function resetData() {
 	Players = {};
+}
+function resetForNewRound() {
+	for (var i in Players) {
+		if (Players[i] !== undefined) {
+			Players[i].resetKillstreak();
+		}
+	}
 }
 
 function toTimestamp(time) {
@@ -462,6 +473,7 @@ logfile.on("line", function(line) {
 			message = "Round started!";
 			roundstarted = true;
 			notifyRoundStart();
+			resetForNewRound();
 		}
 	}
 

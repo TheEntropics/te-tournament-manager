@@ -19,12 +19,18 @@ var Tail = function (path) {
     var fNameStatChanged = fs.statSync(path);
     if (fNameStatChanged.size > currDataLength) {
       fs.open(path, 'r', function(err, fd) {
+        if (err) {
+          console.error("Can't open file. Skipping iteration.");
+          //process.exit();
+          return;
+        };
         var newDataLength = fNameStatChanged.size - readDataLength;
         var buffer = new Buffer(newDataLength, 'utf-8');
         fs.read(fd, buffer, 0, newDataLength, readDataLength, function (err, bytesRead, newData) {
           if (err) {
-            console.error(err);
-            process.exit();
+            console.error("Error reading file. Skipping iteration.");
+            //process.exit();
+            return;
           };
           var usedLinesLength = 0;
           var lines = newData.toString('utf-8').split('\n');
