@@ -26,8 +26,13 @@
 	"kamikaze_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} K;[a-zA-Z\\d]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;-1;.+MOD_PROJECTILE_SPLASH",
 
 	"headshot_event_regex" : "^[ ]*[\\d]+:[\\d]{2} D;[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;.+(MOD_HEAD_SHOT)",
-	"hit_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} D;[a-zA-Z\\d]*;[\\d]*;[a-z]*;([a-zA-Z\\d]*);[a-zA-Z\\d]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
-	"hit_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} D;[a-zA-Z\\d]*;([\\d]*);[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;-*[\\d]*;[a-z]*;[a-zA-Z\\d]*;",
+	"hit_event_bywho_regex" : "^[ ]*[\\d]+:[\\d]{2} D;[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
+	"hit_event_bywhoid_regex" : "^[ ]*[\\d]+:[\\d]{2} D;[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+
+	"knife_event_regex" : "^[ ]*[\\d]+:[\\d]{2} K;[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;.+;(MOD_MELEE);",
+	"knife_event_match" : "MOD_MELEE",
+	"knife_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;(-*[\\d]*);[a-z]*;[a-zA-Z\\d]*;",
+	"knife_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} [A-Z];[a-zA-Z\\d]*;[\\d]*;[a-z]*;[a-zA-Z\\d]*;[a-zA-Z\\d]*;-*[\\d]*;[a-z]*;([a-zA-Z\\d]*);",
 
 	"userjoin_event_name_regex" : "^[ ]*[\\d]+:[\\d]{2} J;[a-zA-Z\\d]*;[\\d]*;(.+)",
 	"userjoin_event_id_regex" : "^[ ]*[\\d]+:[\\d]{2} J;[a-zA-Z\\d]*;([\\d]*);",
