@@ -26,13 +26,13 @@
     </div>
   </nav>
 
-  <div class="body-container" ng-controller="MainController">
-    <div class="container">
+  <div class="body-container" style="height: 100%;" ng-controller="MainController">
+    <div class="container" style="height: 100%;">
       <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
+      <div class="row" style="height: 100%;">
+        <div class="col-md-4" style="height: 100%;">
           <h2>Players</h2>
-          <div id="players-list" class="list-group" style="height: 500px; overflow: auto;">
+          <div id="players-list" class="list-group" style="height: 50%; overflow: auto;">
 
             <a class="list-group-item" ng-repeat="player in players">
               <div class="container-fluid" style="padding-left: 0;">
@@ -49,9 +49,9 @@
           </div>
           <p><a id="add-player" class="btn btn-default col-sm-12" role="button" ng-click="showCreatePlayerModal()">Add player</a></p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="height: 100%;">
           <h2>Teams</h2>
-          <div id="teams-list" class="list-group" style="height: 500px; overflow: auto;">
+          <div id="teams-list" class="list-group" style="height: 50%; overflow: auto;">
 
             <a class="list-group-item" ng-repeat="team in teams">
               <div class="container-fluid" style="padding-left: 0;">
@@ -68,9 +68,9 @@
           </div>
           <p><a id="add-team" class="btn btn-default col-sm-12" role="button" ng-click="showCreateTeamModal()">Add team</a></p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" style="height: 100%;">
           <h2>Events</h2>
-          <div id="events-list" class="list-group" style="height: 500px; overflow: auto;">
+          <div id="events-list" class="list-group" style="height: 50%; overflow: auto;">
 
             <a class="list-group-item" ng-repeat="event in events">
               <div class="container-fluid" style="padding-left: 0;">

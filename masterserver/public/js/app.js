@@ -5,7 +5,7 @@ angular.module("entropicsFest", [])
 	})
 
 	.factory('socket', function ($rootScope) {
-	  var socket = io.connect("http://localhost:3000/");
+	  var socket = io.connect(document.location.href.split("/")[2]+":3000/");
 	  return {
 	    on: function (eventName, callback) {
 	      socket.on(eventName, function () {
