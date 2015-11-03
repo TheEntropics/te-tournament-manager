@@ -106,8 +106,8 @@ tr {
   padding: 15px;
 
   border-collapse: collapse;
-  border-top: 1px solid #090D10;
-  border-bottom: 1px solid #090D10;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 .movingup {
