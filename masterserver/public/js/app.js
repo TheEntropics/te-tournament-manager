@@ -107,10 +107,55 @@ angular.module("entropicsFest", [])
 				return null;
 			}
 
+			// Sounds
+			var headshotSound = new Howl({
+				urls: ['./sounds/headshot.wav']
+			});
+			var kamikazeSound = new Howl({
+				urls: ['./sounds/kamikaze.ogg']
+			});
+			var dominatingSound = new Howl({
+				urls: ['./sounds/dominating.wav']
+			});
+			var firstbloodSound = new Howl({
+				urls: ['./sounds/firstblood.wav']
+			});
+
+			var doublekillSound = new Howl({
+				urls: ['./sounds/doublekill.wav']
+			});
+			var triplekillSound = new Howl({
+				urls: ['./sounds/triplekill.wav']
+			});
+			var ultrakillSound = new Howl({
+				urls: ['./sounds/ultrakill.wav']
+			});
+			var godlikeSound = new Howl({
+				urls: ['./sounds/godlike.wav']
+			});
+			var killingspreeSound = new Howl({
+				urls: ['./sounds/killingspree.wav']
+			});
+			var megakillSound = new Howl({
+				urls: ['./sounds/megakill.wav']
+			});
+			var monsterkillSound = new Howl({
+				urls: ['./sounds/monsterkill.wav']
+			});
+			var unstoppableSound = new Howl({
+				urls: ['./sounds/unstoppable.wav']
+			});
+
+			// Socket events
 			socket.on("updateranking", function(data){
 				console.log("updateranking");
 				for (var playerid in data.players) {
 					var player = find(playerid);
+					var prevStatus = {
+						"headshots" : player.data.headshots+0,
+						"kamikaze" : player.data.kamikaze+0,
+						"currKillstreak" : player.data.currKillstreak
+					}
 					if(player !== null) {
 						var a = [player.data, data.players[playerid]];
 						player.data.kills = _.sum(a, "kills");
@@ -119,9 +164,29 @@ angular.module("entropicsFest", [])
 						player.data.kamikaze = _.sum(a, "kamikaze");
 						player.data.deaths = _.sum(a, "deaths");
 						player.data.killstreak = data.players[playerid].killstreak > player.data.killstreak ? data.players[playerid].killstreak : player.data.killstreak;
+						player.data.currKillstreak = data.players[playerid].killstreak;
 						player.points = calculatePoints(player.data);
 						$window.clearTimeout($scope.timer);
 						$scope.timer = $window.setTimeout(rearrange, 100);
+
+						// Play sounds
+						var isPlayingSound = false;
+						if (prevStatus.kamikaze !== player.data.kamikaze) {
+							kamikazeSound.play();
+							isPlayingSound = true;
+						}
+						if (!isPlayingSound && prevStatus.currKillstreak !== player.data.currKillstreak) {
+							if (player.data.currKillstreak === 2) doublekillSound.play();
+							if (player.data.currKillstreak === 3) triplekillSound.play();
+							if (player.data.currKillstreak === 5) megakillSound.play();
+							if (player.data.currKillstreak === 10) ultrakillSound.play();
+							if (player.data.currKillstreak === 15) monsterkillSound.play();
+							if (player.data.currKillstreak === 20) unstoppableSound.play();
+							if (player.data.currKillstreak === 25) godlikeSound.play();
+						}
+						if (!isPlayingSound && prevStatus.headshots !== player.data.headshots) {
+							headshotSound.play();
+						}
 					}
 				}
 			});
