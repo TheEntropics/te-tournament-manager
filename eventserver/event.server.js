@@ -239,9 +239,9 @@ logfile.on("line", function(line) {
 	var timestamp;
 
 	// GET EVENT TIME
-	var regexstr = gameconfig.time_regex;
+	var regexstr = gameconfig.time_regex || "";
 	var match = line.match(new RegExp(regexstr, ""));
-	if (match != null) {
+	if (match != null && gameconfig.time_regex !== undefined) {
 		match = match[1];
 		timestamp = toTimestamp(match);
 	}
