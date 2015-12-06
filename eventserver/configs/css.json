@@ -1,5 +1,7 @@
 {
 	"gamename" : "Counter-Strike: Source",
+	"reset_data_onroundend" : false,
+	
 	"event_regex" : "UNMATCHABLE_REGEX",
 
 	"time_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - ([\\d]{2}:[\\d]{2}:[\\d]{2}):",
@@ -14,7 +16,7 @@
 	"userleave_event_match" : "disconnected",
 	"roundstart_event_match" : "Round_Start",
 	"roundend_event_match" : "Round_End",
-	
+
 	"kill_event_bywhoid_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
 	"kill_event_towhoid_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \".+<(.+)><.+><.+>\" with \".+\"",
 	"kill_event_bywho_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
@@ -41,5 +43,8 @@
 	"userjoin_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.*>\"",
 
 	"userleave_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.*>\" (disconnected)",
-	"userleave_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.*>\" disconnected"
+	"userleave_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.*>\" disconnected",
+
+	"roundstart_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: World triggered \"(.+)\"",
+	"roundend_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: World triggered \"(.+)\""
 }

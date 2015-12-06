@@ -487,7 +487,9 @@ logfile.on("line", function(line) {
 		if (match === gameconfig.roundend_event_match) {
 			message = "Round ended!";
 			roundstarted = false;
-			resetData();
+			if (gameconfig.reset_data_onroundend === undefined || gameconfig.reset_data_onroundend) {
+				resetData();
+			}
 			notifyRoundEnd();
 		}
 	}
