@@ -1,0 +1,28 @@
+{
+	"gamename" : "Openarena",
+	"event_regex" : "^(.+?):.*",
+
+	"kill_event_match" : "Kill",
+	"userjoin_event_match" : "ClientUserinfoChanged",
+	"userleave_event_match" : "ClientDisconnect",
+	"roundstart_event_match" : "InitGame",
+	"roundend_event_match" : "ShutdownGame",
+
+	"kill_event_bywhoid_regex" : "^.+?: (\\d+) \\d+ \\d+: .+ killed .+ by .+",
+	"kill_event_towhoid_regex" : "^.+?: \\d+ (\\d+) \\d+: .+ killed .+ by .+",
+	"kill_event_bywho_regex" : "^.+?: \\d+ \\d+ \\d+: (.+) killed .+ by .+",
+	"kill_event_towho_regex" : "^.+?: \\d+ \\d+ \\d+: .+ killed (.+) by .+",
+	"kill_event_weapon_regex" : "^.+?: \\d+ \\d+ \\d+: .+ killed .+ by (.+)",
+
+	"knife_event_regex" : "^.+?: \\d+ \\d+ \\d+: .+ killed .+ by (MOD_GAUNTLET)",
+	"knife_event_match" : "MOD_GAUNTLET",
+	"knife_event_id_regex" : "^.+?: (\\d+) \\d+ \\d+: .+ killed .+ by .+",
+	"knife_event_name_regex" : "^.+?: \\d+ \\d+ \\d+: (.+) killed .+ by .+",
+
+	"userjoin_event_regex" : "^(.+?):.*",
+	"userjoin_event_name_regex" : "^ClientUserinfoChanged: \\d+ n\\\\(.*?)\\\\t",
+	"userjoin_event_id_regex" : "^ClientUserinfoChanged: (\\d+) n\\\\.*?\\\\t",
+
+	"userleave_event_regex" : "^(.+?):.*",
+	"userleave_event_id_regex" : "^ClientDisconnect: (\\d+)"
+}
