@@ -1,5 +1,5 @@
 {
-	"gamename" : "Counter Strike Global Offensive",
+	"gamename" : "Counter-Strike: Global Offensive",
 	"event_regex" : "UNMATCHABLE_REGEX",
 
 	"time_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - ([\\d]{2}:[\\d]{2}:[\\d]{2}):",
