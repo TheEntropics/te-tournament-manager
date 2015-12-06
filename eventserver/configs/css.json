@@ -1,0 +1,45 @@
+{
+	"gamename" : "Counter-Strike: Source",
+	"event_regex" : "UNMATCHABLE_REGEX",
+
+	"time_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - ([\\d]{2}:[\\d]{2}:[\\d]{2}):",
+
+	"kill_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: .+ (killed) .+ with .+",
+	"hit_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: .+ (killed) .+ with .+",
+
+	"kill_event_match" : "killed",
+	"hit_event_match" : "killed",
+	"headshot_event_match" : "headshot",
+	"userjoin_event_match" : "entered the game",
+	"userleave_event_match" : "disconnected",
+	"roundstart_event_match" : "Round_Start",
+	"roundend_event_match" : "Round_End",
+	
+	"kill_event_bywhoid_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+	"kill_event_towhoid_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \".+<(.+)><.+><.+>\" with \".+\"",
+	"kill_event_bywho_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+	"kill_event_towho_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \"(.+)<.+><.+><.+>\" with \".+\"",
+	"kill_event_weapon_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \"(.+)\"",
+
+	"suicide_event_regex" : "L[ ]*[\\d]{2}\/[\\d]{2}\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.+>\" .+ committed suicide",
+
+	"kamikaze_event_regex" : "L[ ]*[\\d]{2}\/[\\d]{2}\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" .+ (committed suicide with \"hegrenade\")",
+	"kamikaze_event_match" : "committed suicide with \"hegrenade\"",
+	"kamikaze_event_id_regex" : "L[ ]*[\\d]{2}\/[\\d]{2}\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.+>\" .+ committed suicide with \"hegrenade\"",
+
+	"knife_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \"(knife)\"",
+	"knife_event_match" : "knife",
+	"knife_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+	"knife_event_name_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+
+	"headshot_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\" \\((headshot)\\)",
+	"hit_event_bywho_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+	"hit_event_bywhoid_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.+>\" killed \".+<.+><.+><.+>\" with \".+\"",
+
+	"userjoin_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.*>\" (entered the game)",
+	"userjoin_event_name_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \"(.+)<.+><.+><.*>\"",
+	"userjoin_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.*>\"",
+
+	"userleave_event_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<.+><.+><.*>\" (disconnected)",
+	"userleave_event_id_regex" : "L[ ]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} - [\\d]{2}:[\\d]{2}:[\\d]{2}: \".+<(.+)><.+><.*>\" disconnected"
+}
